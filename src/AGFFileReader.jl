@@ -30,12 +30,11 @@ export Air, isair
 #need to fix this so it runs build process if agf data is not already downloaded
 # if !isfile(AGFGLASSCAT_PATH)
 #     @warn "$(basename(AGFGLASSCAT_PATH)) not found! Running build steps."
-#     Pkg.build("OpticSim"; verbose=true)
+#     Pkg.build("AGFFileReader"; verbose=true)
 # end
 
 include("data/jl/AGFGlassCat.jl") # this needs to be literal for intellisense to work
-include("data/jl/OTHER.jl")
-
+include("OTHER.jl")
 # include functionality for managing runtime (dynamic) glass cats: MIL_GLASSES and MODEL_GLASSES
 include("runtime.jl")
 export glassfromMIL, modelglass
