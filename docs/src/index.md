@@ -59,8 +59,10 @@ const PRESSURE_REF = 1.0 # Atm
 
 ## Utility functions
 
-You can print out glass properties with the `info` function:
-
+```@docs
+AGFFileReader.info
+```
+Example:
 ```
 julia> info(SCHOTT.FK3)
 ID:                                                AGF:905
@@ -125,13 +127,30 @@ Transmission data:
         2.325μm           0.59         25.0mm
           2.5μm           0.34         25.0mm
 ```
-You can also plot glass properties with the `plot_indices` function
+
+```@docs
+AGFFileReader.plot_indices
+```
+
+Example:
 
 ```
 julia> plot_indices(SCHOTT.FK3)
 ```
 
 ![Refractive Index vs. wavelength for SCHOTT.FK3](assets/SCHOTT.FK3-indexplot.png)
+
+```@docs 
+AGFFileReader.drawglassmap
+```
+
+Example:
+
+```julia
+julia> drawglassmap(HIKARI)
+```
+
+![Glass map for the HIKARI glass catalog](assets/glassmapHIKARI.png)
 
 ## How AGFFileReader works
 
