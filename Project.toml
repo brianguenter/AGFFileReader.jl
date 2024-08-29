@@ -22,7 +22,7 @@ ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 [compat]
 DataFrames = "1"
 ForwardDiff = "0.10"
-GR = "0.62"
+GR = "0.62, 0.73"
 HTTP = "0.9"
 Plots = "1"
 Polynomials = "2"
