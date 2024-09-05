@@ -20,7 +20,7 @@ using ForwardDiff
 include("constants.jl")
 
 include("GlassTypes.jl")
-export info, glassname
+export info, glassname, Glass
 include("BaseGlasses.jl")
 include("Air.jl")
 export Air, isair
@@ -55,5 +55,5 @@ export add_agf
 include("generate.jl")
 
 end # module
-export GlassCat
+
 
