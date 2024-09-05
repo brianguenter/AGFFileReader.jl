@@ -294,7 +294,6 @@ end
 
 
         info_lines = [
-            "ID:                                                OTHER:2",
             "Dispersion formula:                                Cauchy (-2)",
             "Dispersion formula coefficients:",
             "     A:                                            1.44503",
