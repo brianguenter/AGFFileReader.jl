@@ -4,7 +4,6 @@
 
 struct AirType <: AbstractGlass end
 Base.show(io::IO, ::AirType) = print(io, "Air")
-glassid(::AirType) = GlassID(AIR, 0)
 glassname(::AirType) = "AGFFileReader.Air"
 
 """
@@ -14,7 +13,6 @@ Tests if a is Air.
 """
 isair(::AirType) = true
 isair(::AbstractGlass) = false
-isair(a::GlassID) = a.type === AIR
 
 function info(io::IO, ::AirType)
     println(io, "AGFFileReader.Air")

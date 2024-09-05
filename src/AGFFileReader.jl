@@ -20,7 +20,8 @@ using ForwardDiff
 include("constants.jl")
 
 include("GlassTypes.jl")
-export GlassID, info, glassid, glassname, glassforid
+export info, glassname
+include("BaseGlasses.jl")
 include("Air.jl")
 export Air, isair
 

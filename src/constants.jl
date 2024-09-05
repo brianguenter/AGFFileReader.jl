@@ -21,4 +21,5 @@ const JL_DIR = joinpath(GLASSCAT_DIR, "data", "jl") # contains AGFGlasscat.jl, S
 const SOURCES_PATH = joinpath(GLASSCAT_DIR, "data", "sources.txt")
 const AGFGLASSCAT_PATH = joinpath(JL_DIR, "AGFGlassCat.jl")
 
+
 # NOTE: if you change JL_DIR or AGFGLASSCAT_PATH, you also need to change the include statement in AGFFileReader.jl

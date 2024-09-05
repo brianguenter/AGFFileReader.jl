@@ -24,12 +24,12 @@ julia> absorption(AGFFileReader.SCHOTT.PSK3, 532u"nm", temperature = 25u"°C", p
 0.00020855284788532435
 ```
 """
-function absorption(glass::Glass, wavelength::Length; temperature::Temperature = TEMP_REF_UNITFUL, pressure::Float64 = PRESSURE_REF)::Float64
+function absorption(glass::Glass, wavelength::Length; temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF)::Float64
     λ = Float64(ustrip(u"μm", wavelength))
-    return absorption(glass, λ, temperature = ustrip(Float64, u"°C", temperature), pressure = pressure)
+    return absorption(glass, λ, temperature=ustrip(Float64, u"°C", temperature), pressure=pressure)
 end
 
-function absorption(glass::Glass, λ::T; temperature::T = T(TEMP_REF), pressure::T = T(PRESSURE_REF))::T where {T<:Real}
+function absorption(glass::Glass, λ::T; temperature::T=T(TEMP_REF), pressure::T=T(PRESSURE_REF))::T where {T<:Real}
     # if the glass has no transmission data then assume no absorption
     if glass.transmission === nothing
         return zero(T)
@@ -38,8 +38,8 @@ function absorption(glass::Glass, λ::T; temperature::T = T(TEMP_REF), pressure:
     reference_temp = T(glass.temp)
 
     # to work out the wavelength at the reference temperature we need the RIs of air at system temp and at reference temp
-    n_air_at_sys = absairindex(λ, temperature = temperature, pressure = pressure)
-    n_air_at_ref = absairindex(λ, temperature = reference_temp)
+    n_air_at_sys = absairindex(λ, temperature=temperature, pressure=pressure)
+    n_air_at_ref = absairindex(λ, temperature=reference_temp)
 
     # scale the wavelength to air at the reference temperature/pressure
     λ = λ * (n_air_at_sys / n_air_at_ref)
@@ -58,7 +58,7 @@ function absorption(glass::Glass, λ::T; temperature::T = T(TEMP_REF), pressure:
         let λlow = 0.0, tlow = 0.0, τlow = 0.0, λhigh = 0.0, thigh = 0.0, τhigh = 0.0
             for i in 2:N
                 if λ <= tdata[i][1]
-                    λlow, tlow, τlow = tdata[i - 1]
+                    λlow, tlow, τlow = tdata[i-1]
                     λhigh, thigh, τhigh = tdata[i]
                     break
                 end
@@ -73,11 +73,11 @@ function absorption(glass::Glass, λ::T; temperature::T = T(TEMP_REF), pressure:
     end
 end
 
-function absorption(::AirType, ::Length; temperature::Temperature = TEMP_REF_UNITFUL, pressure::Float64 = PRESSURE_REF)::Float64
+function absorption(::AirType, ::Length; temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF)::Float64
     return 0.0
 end
 
-function absorption(::AirType, ::T; temperature::T = T(TEMP_REF), pressure::T = T(PRESSURE_REF))::T where {T<:Real}
+function absorption(::AirType, ::T; temperature::T=T(TEMP_REF), pressure::T=T(PRESSURE_REF))::T where {T<:Real}
     return zero(T)
 end
 
@@ -103,18 +103,18 @@ julia> index(AGFFileReader.HOYA.FF1, 532u"nm", temperature = 25u"°C", pressure 
 1.5144848290944655
 ```
 """
-function index(glass::Glass, wavelength::Length; temperature::Temperature = TEMP_REF_UNITFUL, pressure::Float64 = PRESSURE_REF)::Float64
+function index(glass::Glass, wavelength::Length; temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF)::Float64
     λ = Float64(ustrip(uconvert(u"μm", wavelength)))
-    return index(glass, λ, temperature = ustrip(Float64, u"°C", temperature), pressure = pressure)
+    return index(glass, λ, temperature=ustrip(Float64, u"°C", temperature), pressure=pressure)
 end
 
-function index(glass::Glass, λ::T; temperature::T = T(TEMP_REF), pressure::T = T(PRESSURE_REF))::T where {T<:Real}
+function index(glass::Glass, λ::T; temperature::T=T(TEMP_REF), pressure::T=T(PRESSURE_REF))::T where {T<:Real}
     # all calculations for the material must be done at the refernce temperature
     reference_temp = T(glass.temp)
 
     # to work out the wavelength at the reference temperature we need the RIs of air at system temp and at reference temp
-    n_air_at_sys = absairindex(λ, temperature = temperature, pressure = pressure)
-    n_air_at_ref = absairindex(λ, temperature = reference_temp)
+    n_air_at_sys = absairindex(λ, temperature=temperature, pressure=pressure)
+    n_air_at_ref = absairindex(λ, temperature=reference_temp)
 
     # scale the wavelength to air at the reference temperature/pressure
     λabs = λ * n_air_at_sys
@@ -204,11 +204,11 @@ function index(glass::Glass, λ::T; temperature::T = T(TEMP_REF), pressure::T = 
     return n_rel
 end
 
-function index(::AirType, ::Length; temperature::Temperature = TEMP_REF_UNITFUL, pressure::Float64 = PRESSURE_REF)::Float64
+function index(::AirType, ::Length; temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF)::Float64
     return 1.0
 end
 
-function index(::AirType, ::T; temperature::T = T(TEMP_REF), pressure::T = T(PRESSURE_REF))::T where {T<:Real}
+function index(::AirType, ::T; temperature::T=T(TEMP_REF), pressure::T=T(PRESSURE_REF))::T where {T<:Real}
     return one(T)
 end
 
@@ -229,13 +229,13 @@ julia> absairindex(532u"nm", temperature = 25u"°C", pressure = 1.3)
 1.0003494991178161
 ```
 """
-function absairindex(wavelength::Length; temperature::Temperature = TEMP_REF_UNITFUL, pressure::Float64 = PRESSURE_REF)::Float64
+function absairindex(wavelength::Length; temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF)::Float64
     # convert to required units
     λ = Float64(ustrip(uconvert(u"μm", wavelength)))
-    return absairindex(λ, temperature = ustrip(Float64, u"°C", temperature), pressure = pressure)
+    return absairindex(λ, temperature=ustrip(Float64, u"°C", temperature), pressure=pressure)
 end
 
-function absairindex(λ::T; temperature::T = T(TEMP_REF), pressure::T = T(PRESSURE_REF))::T where {T<:Real}
+function absairindex(λ::T; temperature::T=T(TEMP_REF), pressure::T=T(PRESSURE_REF))::T where {T<:Real}
     # convert to required units
     n_ref = one(T) + ((6432.8 + ((2949810.0 * λ^2) / (146.0 * λ^2 - one(T))) + ((25540.0 * λ^2) / (41.0 * λ^2 - one(T)))) * 1e-8)
     n_rel = one(T) + ((n_ref - one(T)) / (one(T) + (temperature - 15.0) * 0.0034785)) * (pressure / PRESSURE_REF)
@@ -248,13 +248,13 @@ end
 Fit a polynomial to `indices` at `wavelengths`, optionally specifying the `degree` of the polynomial.
 Returns tuple of array of fitted indices at wavelengths and the polynomial.
 """
-function polyfit_indices(wavelengths::Union{AbstractRange{<:Length},AbstractArray{<:Length,1}}, indices::AbstractArray{<:Number,1}; degree::Int = 5)
+function polyfit_indices(wavelengths::Union{AbstractRange{<:Length},AbstractArray{<:Length,1}}, indices::AbstractArray{<:Number,1}; degree::Int=5)
     w = ustrip.(uconvert.(u"μm", wavelengths))
     okay = (indices .> 0.0)
     if !any(okay)
         return (ones(Float64, size(w)) .* NaN, nothing)
     end
-    xs = range(-1.0, stop = 1.0, length = length(w[okay]))
+    xs = range(-1.0, stop=1.0, length=length(w[okay]))
     poly = fit(xs, indices[okay], degree)
     interp_indices = poly.(xs)
     # ensure output has all entries
@@ -270,7 +270,7 @@ Plot the refractive index for `glass` for `nsamples` within its valid range of w
 `polyfit` will show a polynomial of optionally specified `degree` fitted to the data, `fiterror` will also show the fitting error of the result.
 `sampling_domain` specifies whether the samples will be spaced uniformly in "wavelength" or "wavenumber".
 """
-function plot_indices(glass::AbstractGlass; polyfit::Bool = false, fiterror::Bool = false, degree::Int = 5, temperature::Temperature = TEMP_REF_UNITFUL, pressure::Float64 = PRESSURE_REF, nsamples::Int = 300, sampling_domain::String = "wavelength")
+function plot_indices(glass::AbstractGlass; polyfit::Bool=false, fiterror::Bool=false, degree::Int=5, temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF, nsamples::Int=300, sampling_domain::String="wavelength")
     if isair(glass)
         wavemin = 380 * u"nm"
         wavemax = 740 * u"nm"
@@ -280,43 +280,41 @@ function plot_indices(glass::AbstractGlass; polyfit::Bool = false, fiterror::Boo
     end
 
     if (sampling_domain == "wavelength")
-        waves = range(wavemin, stop = wavemax, length = nsamples)      # wavelength in um
+        waves = range(wavemin, stop=wavemax, length=nsamples)      # wavelength in um
     elseif (sampling_domain == "wavenumber")
         sigma_min = 1.0 / wavemax
         sigma_max = 1.0 / wavemin
-        wavenumbers = range(sigma_min, stop = sigma_max, length = nsamples) # wavenumber in um.^-1
+        wavenumbers = range(sigma_min, stop=sigma_max, length=nsamples) # wavenumber in um.^-1
         waves = 1.0 ./ wavenumbers
     else
         error("Invalid sampling domain, should be \"wavelength\" or \"wavenumber\"")
     end
 
-    p = plot(xlabel = "wavelength (um)", ylabel = "refractive index")
+    p = plot(xlabel="wavelength (um)", ylabel="refractive index")
 
     f = w -> begin
         try
-            return index(glass, w, temperature = temperature, pressure = pressure)
+            return index(glass, w, temperature=temperature, pressure=pressure)
         catch
             return NaN
         end
     end
     indices = [f(w) for w in waves]
-    plot!(ustrip.(waves), indices, color = :blue, label = "From Data")
+    plot!(ustrip.(waves), indices, color=:blue, label="From Data")
 
     if polyfit
-        (p_indices, _) = polyfit_indices(waves, indices, degree = degree)
-        plot!(ustrip.(waves), p_indices, color = :black, markersize = 4, label = "Polyfit")
+        (p_indices, _) = polyfit_indices(waves, indices, degree=degree)
+        plot!(ustrip.(waves), p_indices, color=:black, markersize=4, label="Polyfit")
     end
 
     if polyfit && fiterror
         err = p_indices - indices
-        p2 = plot(xlabel = "wavelength (um)", ylabel = "fit error")
-        plot!(ustrip.(waves), err, color = :red, label = "Fit Error")
-        p = plot(p, p2, layout = 2)
+        p2 = plot(xlabel="wavelength (um)", ylabel="fit error")
+        plot!(ustrip.(waves), err, color=:red, label="Fit Error")
+        p = plot(p, p2, layout=2)
     end
 
-    plot!(title = "$(glassname(glass)) dispersion")
-
-    gui(p)
+    plot!(title="$(glassname(glass)) dispersion")
 end
 
 
@@ -339,20 +337,20 @@ example: plot only glasses that do not contain the strings "E_" and "J_"
 
 drawglassmap(NIKON,showprefixglasses = true,glassfilterpredicate = (x) -> !occursin("J_",string(x)) && !occursin("E_",string(x)))
 """
-function drawglassmap(glasscatalog::Module; λ::Length = 550nm, glassfontsize::Integer = 3, showprefixglasses::Bool = false, minindex = 1.0, maxindex = 3.0, mindispersion = -.3, maxdispersion = 0.0, glassfilterpredicate = (x)->true)
+function drawglassmap(glasscatalog::Module; λ::Length=550nm, glassfontsize::Integer=3, showprefixglasses::Bool=false, minindex=1.0, maxindex=3.0, mindispersion=-0.3, maxdispersion=0.0, glassfilterpredicate=(x) -> true)
     wavelength = Float64(ustrip(uconvert(μm, λ)))
-    indices = Vector{Float64}(undef,0)
-    dispersions = Vector{Float64}(undef,0)
-    glassnames = Vector{String}(undef,0)
+    indices = Vector{Float64}(undef, 0)
+    dispersions = Vector{Float64}(undef, 0)
+    glassnames = Vector{String}(undef, 0)
 
     for name in names(glasscatalog)
         glass = eval(:($glasscatalog.$name))
         glassstring = String(name)
         hasprefix = occursin("_", glassstring)
- 
+
         if typeof(glass) !== Module && (minindex <= index(glass, wavelength) <= maxindex)
-            f(x) = index(glass,x)
-            g = x -> ForwardDiff.derivative(f, x);
+            f(x) = index(glass, x)
+            g = x -> ForwardDiff.derivative(f, x)
             dispersion = g(wavelength)
 
             # don't show glasses that have an _ in the name. This prevents cluttering the map with many glasses of
@@ -365,16 +363,16 @@ function drawglassmap(glasscatalog::Module; λ::Length = 550nm, glassfontsize::I
         end
     end
 
-    font = Plots.font(family = "Sans", pointsize = glassfontsize, color = RGB(0.0,0.0,.4))
+    font = Plots.font(family="Sans", pointsize=glassfontsize, color=RGB(0.0, 0.0, 0.4))
     series_annotations = Plots.series_annotations(glassnames, font)
     scatter(
         dispersions,
         indices;
         series_annotations,
-        markeralpha = 0.0,
-        legends = :none,
-        xaxis = "dispersion @$λ",
-        yaxis = "index",
-        title = "Glass Catalog: $glasscatalog",
-        xflip = true) #should use markershape = :none to prevent markers from being drawn but this option doesn't work. Used markeralpha = 0 so the markers are invisible. A hack which works.
+        markeralpha=0.0,
+        legends=:none,
+        xaxis="dispersion @$λ",
+        yaxis="index",
+        title="Glass Catalog: $glasscatalog",
+        xflip=true) #should use markershape = :none to prevent markers from being drawn but this option doesn't work. Used markeralpha = 0 so the markers are invisible. A hack which works.
 end

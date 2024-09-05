@@ -33,7 +33,7 @@ julia> index(glassfromMIL(1.134642), 0.5875618)
 function glassfromMIL(glasscode::Int)
     Nd = floor(Int, glasscode / 1000) / 1000 + 1
     Vd = (glasscode - floor(Int, glasscode / 1000) * 1000) / 10
-    g = _modelglass(Nd, Vd, 0.0, GlassID(MIL, glasscode))
+    g = _modelglass(Nd, Vd, 0.0,)
     MIL_GLASSES[glasscode] = g
     return g
 end
@@ -42,8 +42,8 @@ function glassfromMIL(glasscode::Float64)
     @assert glasscode > 1.0
     glasscodeid = round(Int, glasscode * 1000000)
     Nd = floor(Int, glasscode * 1000) / 1000 + 1
-    Vd = round((glasscode * 1000 - floor(Int, glasscode * 1000)) * 100, digits = 1)
-    g = _modelglass(Nd, Vd, 0.0, GlassID(MIL, glasscodeid))
+    Vd = round((glasscode * 1000 - floor(Int, glasscode * 1000)) * 100, digits=1)
+    g = _modelglass(Nd, Vd, 0.0)
     MIL_GLASSES[glasscodeid] = g
     return g
 end
@@ -67,12 +67,12 @@ julia> index(modelglass(1.2344, 61.57, 0.003), 0.678)
 ```
 """
 function modelglass(Nd::Float64, Vd::Float64, ΔPgF::Float64)
-    g = _modelglass(Nd, Vd, ΔPgF, GlassID(MODEL, length(MODEL_GLASSES) + 1))
+    g = _modelglass(Nd, Vd, ΔPgF)
     push!(MODEL_GLASSES, g)
     return g
 end
 
-function _modelglass(Nd::Float64, Vd::Float64, ΔPgF::Float64, ID::GlassID)
+function _modelglass(Nd::Float64, Vd::Float64, ΔPgF::Float64)
     # from Schott "TIE-29: Refractive Index and Dispersion"
     a = ΔPgF + 0.6438 - 0.001682 * Vd
     # Using fitting results from https://www.gnu.org/software/goptical/manual/Material_Abbe_class_reference.html
@@ -80,5 +80,5 @@ function _modelglass(Nd::Float64, Vd::Float64, ΔPgF::Float64, ID::GlassID)
     C2 = a * 18.27315722388047447566 + -8.93204522498095698779
     C3 = a * -14.55275321129051135927 + 7.91015964461522003148
     C4 = a * 3.48385106908642905310 + -1.80321117937358499361
-    return Glass(ID, -1, C1, C2, C3, C4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.36, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, TEMP_REF, ΔPgF, -1.0, -1.0, 0.0, -1.0, 0, -1.0, nothing, Nd, -1.0, -1.0, 0, Vd, 1, 0.0, 0.0)
+    return Glass(-1, C1, C2, C3, C4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.36, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, TEMP_REF, ΔPgF, -1.0, -1.0, 0.0, -1.0, 0, -1.0, nothing, Nd, -1.0, -1.0, 0, Vd, 1, 0.0, 0.0)
 end

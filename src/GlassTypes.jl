@@ -7,17 +7,6 @@ using StaticArrays
 @enum GlassType MODEL MIL AGF OTHER AIR TEST
 
 """
-Object identifying a glass, containing a type (e.g. `MODEL`, `MIL`, `OTHER` or `AGF`) depending on how the glass is defined, and an integer ID.
-Air is `AIR:0`, others are on the form `AGF:N`, for example.
-"""
-struct GlassID
-    type::GlassType
-    num::Int
-end
-
-Base.show(io::IO, a::GlassID) = print(io, "$(string(a.type)):$(a.num)")
-
-"""
 Abstract type encapsulating all glasses.
 """
 abstract type AbstractGlass end
@@ -30,7 +19,6 @@ Never used directly, instead created using catalog glasses, e.g. `AGFFileReader.
 In order to prevent type ambiguities in OpticSim.jl we can't have this type paramaterized.
 """
 struct Glass <: AbstractGlass
-    ID::GlassID
     dispform::Int
     C1::Float64
     C2::Float64
@@ -69,79 +57,26 @@ struct Glass <: AbstractGlass
     p::Float64
     meltfreq::Int
 
-    function Glass(ID::GlassID, dispform, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, λmin, λmax, D₀, D₁, D₂, E₀, E₁, λₜₖ, temp, ΔPgF, PR, relcost, TCE, CR, status, SR, transmission, Nd, AR, FR, exclude_sub, Vd, ignore_thermal_exp, p, meltfreq)
+    function Glass(dispform, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, λmin, λmax, D₀, D₁, D₂, E₀, E₁, λₜₖ, temp, ΔPgF, PR, relcost, TCE, CR, status, SR, transmission, Nd, AR, FR, exclude_sub, Vd, ignore_thermal_exp, p, meltfreq)
         # need a constructor to massage the transmission data
         if transmission === nothing
             transmission_s = nothing
             transmissionN = -1
         else
-            fill = [SVector(0.0, 0.0, 0.0) for _ in 1:(100 - length(transmission))]
+            fill = [SVector(0.0, 0.0, 0.0) for _ in 1:(100-length(transmission))]
             transmission_s = SVector{100,SVector{3,Float64}}(transmission..., fill...)
             transmissionN = length(transmission)
         end
-        return new(ID, dispform, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, λmin, λmax, D₀, D₁, D₂, E₀, E₁, λₜₖ, temp, ΔPgF, PR, relcost, TCE, CR, status, SR, transmission_s, transmissionN, Nd, AR, FR, exclude_sub, Vd, ignore_thermal_exp, p, meltfreq)
+        return new(dispform, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, λmin, λmax, D₀, D₁, D₂, E₀, E₁, λₜₖ, temp, ΔPgF, PR, relcost, TCE, CR, status, SR, transmission_s, transmissionN, Nd, AR, FR, exclude_sub, Vd, ignore_thermal_exp, p, meltfreq)
     end
 end
 
-"""
-    glassid(g::AbstractGlass) -> GlassID
-
-Get the ID of the glass, see [`GlassID`](@ref).
-"""
-glassid(g::Glass) = g.ID
-
-"""
-    glassname(g::Union{AbstractGlass,GlassID})
-
-Get the name (including catalog) of the glass, or glass with this ID.
-"""
-glassname(g::Glass) = glassname(g.ID)
-function glassname(ID::GlassID)
-    t, n = ID.type, ID.num
-    if t === MODEL
-        return "AGFFileReader.ModelGlass.$(n)"
-    elseif t === MIL
-        return "AGFFileReader.GlassFromMIL.$(n)"
-    elseif t === AIR
-        return "AGFFileReader.Air"
-    elseif t === OTHER
-        return OTHER_GLASS_NAMES[n]
-    elseif t === AGF
-        return AGF_GLASS_NAMES[n]
-    elseif t === TEST
-        return TEST_GLASS_NAMES[n]
-    else
-        throw(ArgumentError("unsupported GlassID type $t"))
-    end
-end
+glassname(a::Glass) = string(typeof(a))
 
 function Base.show(io::IO, g::Glass)
     print(io, glassname(g))
 end
 
-"""
-    glassforid(ID::GlassID)
-
-Get the glass for a given ID.
-"""
-function glassforid(ID::GlassID)
-    t, n = ID.type, ID.num
-    if t === MODEL
-        return MODEL_GLASSES[n]::Glass
-    elseif t === MIL
-        return MIL_GLASSES[n]::Glass
-    elseif t === AIR
-        return AGFFileReader.Air
-    elseif t === OTHER
-        return OTHER_GLASSES[n]::Glass
-    elseif t === AGF
-        return AGF_GLASSES[n]::Glass
-    elseif t === TEST
-        return TEST_GLASSES[n]::Glass
-    else
-        throw(ArgumentError("unsupported GlassID type $t"))
-    end
-end
 
 """
     info([io::IO], glass::AbstractGlass)
@@ -183,8 +118,6 @@ Exclude substitution:                              false
 """
 function info(io::IO, glass::Glass)
     D = glass.dispform
-
-    println(io, "$(rpad("ID:", 50)) $(glass.ID)")
 
     if (D == -2)
         println(io, "$(rpad("Dispersion formula:", 50)) Cauchy (-2)")

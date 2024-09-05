@@ -25,7 +25,7 @@ function generate_jls(
     mainfile::AbstractString,
     jldir::AbstractString,
     agfdir::AbstractString;
-    test::Bool = false
+    test::Bool=false
 )
     glasstype = test ? "TEST" : "AGF"
     id = 1
@@ -94,11 +94,11 @@ function agffile_to_catalog(agffile::AbstractString)
         "GC" => nullspec,
         "NM" => (
             "raw_name dispform _        Nd   Vd   exclude_sub status meltfreq",
-            [nothing, NaN,     nothing, NaN, NaN, 0,          0,     0       ]
+            [nothing, NaN, nothing, NaN, NaN, 0, 0, 0]
         ),
         "ED" => (
             "TCE  _        p    ΔPgF ignore_thermal_exp",
-            [NaN, nothing, NaN, NaN, 0                 ]
+            [NaN, nothing, NaN, NaN, 0]
         ),
         "CD" => (
             join([string('C', i) for i in 1:10], ' '),
@@ -106,7 +106,7 @@ function agffile_to_catalog(agffile::AbstractString)
         ),
         "TD" => (
             "D₀ D₁ D₂ E₀ E₁ λₜₖ temp",
-            [0, 0, 0, 0, 0, 0, 20  ]
+            [0, 0, 0, 0, 0, 0, 20]
         ),
         "OD" => (
             "relcost CR FR SR AR PR",
@@ -114,7 +114,7 @@ function agffile_to_catalog(agffile::AbstractString)
         ),
         "LD" => (
             "λmin λmax",
-            [NaN, NaN ]
+            [NaN, NaN]
         ),
         "IT" => nullspec,
     )
@@ -124,7 +124,9 @@ function agffile_to_catalog(agffile::AbstractString)
     # the function will parse the row data into catalogdict and flush the row buffer
     function process_rowbuffer!()
         # an empty rowbuffer gets passed at the beginning of each file
-        if isempty(rowbuffer) return end
+        if isempty(rowbuffer)
+            return
+        end
         token = rowbuffer[1]
 
         # NM and IT need special treatment
@@ -146,7 +148,7 @@ function agffile_to_catalog(agffile::AbstractString)
 
         # parse row buffer into catalogdict, according to rowspec
         for (i, (key, defaultvalue)) in enumerate(zip(split(rowspec[1]), rowspec[2]))
-            value = length(rowbuffer) < i + 1 || rowbuffer[i + 1] == "-" ? defaultvalue : rowbuffer[i + 1]
+            value = length(rowbuffer) < i + 1 || rowbuffer[i+1] == "-" ? defaultvalue : rowbuffer[i+1]
             catalogdict[glassname][key] = value
         end
 
@@ -203,7 +205,7 @@ function catalog_to_modstring(
 
     modstrings = [
         "module $catalogname",
-        "using ..AGFFileReader: Glass, GlassID, $glasstype",
+        "using ..AGFFileReader: Glass, $glasstype",
         "export $(join(keys(catalog), ", "))",
         ""
     ]
@@ -232,19 +234,19 @@ function glassinfo_to_docstring(
     getinfo(key, default=0.0) = get(glassinfo, key, default)
 
     return join([
-        "\"\"\"    $catalogname.$glassname$raw_name",
-        "```",
-        "$(pad("ID:"))$glasstype:$id",
-        "$(pad("RI @ 587nm:"))$(getinfo("Nd"))",
-        "$(pad("Abbe Number:"))$(getinfo("Vd"))",
-        "$(pad("ΔPgF:"))$(getinfo("ΔPgF"))",
-        "$(pad("TCE (÷1e-6):"))$(getinfo("TCE"))",
-        "$(pad("Density:"))$(getinfo("p"))g/m³",
-        "$(pad("Valid wavelengths:"))$(getinfo("λmin"))μm to $(getinfo("λmax"))μm",
-        "$(pad("Reference Temp:"))$(getinfo("temp", 20.0))°C",
-        "```",
-        "\"\"\""
-    ], "\n")
+            "\"\"\"    $catalogname.$glassname$raw_name",
+            "```",
+            "$(pad("ID:"))$glasstype:$id",
+            "$(pad("RI @ 587nm:"))$(getinfo("Nd"))",
+            "$(pad("Abbe Number:"))$(getinfo("Vd"))",
+            "$(pad("ΔPgF:"))$(getinfo("ΔPgF"))",
+            "$(pad("TCE (÷1e-6):"))$(getinfo("TCE"))",
+            "$(pad("Density:"))$(getinfo("p"))g/m³",
+            "$(pad("Valid wavelengths:"))$(getinfo("λmin"))μm to $(getinfo("λmax"))μm",
+            "$(pad("Reference Temp:"))$(getinfo("temp", 20.0))°C",
+            "```",
+            "\"\"\""
+        ], "\n")
 end
 
 """
@@ -253,9 +255,7 @@ Convert a `glassinfo` dict into an `argstring` to be passed into a `Glass` const
 function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString}, id::Integer, glasstype::AbstractString)
     argstrings = []
     for fn in string.(fieldnames(Glass))
-        if fn == "ID"
-            push!(argstrings, "GlassID($glasstype, $id)")
-        elseif fn in ["D₀", "D₁", "D₂", "E₀", "E₁", "λₜₖ"]
+        if fn in ["D₀", "D₁", "D₂", "E₀", "E₁", "λₜₖ"]
             push!(argstrings, repr(get(glassinfo, fn, 0.0)))
         elseif fn == "temp"
             push!(argstrings, repr(get(glassinfo, fn, 20.0)))
