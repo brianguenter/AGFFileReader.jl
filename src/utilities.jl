@@ -35,9 +35,9 @@ function absorption(glass::Glass, λ::T; temperature::T=T(TEMP_REF), pressure::T
         return zero(T)
     end
 
-    reference_temp = T(glass.temp)
+    reference_temp = T(glass.temperature)
 
-    # to work out the wavelength at the reference temperature we need the RIs of air at system temp and at reference temp
+    # to work out the wavelength at the reference temperature we need the RIs of air at system temperature and at reference temperature
     n_air_at_sys = absairindex(λ, temperature=temperature, pressure=pressure)
     n_air_at_ref = absairindex(λ, temperature=reference_temp)
 
@@ -110,9 +110,9 @@ end
 
 function index(glass::Glass, λ::T; temperature::T=T(TEMP_REF), pressure::T=T(PRESSURE_REF))::T where {T<:Real}
     # all calculations for the material must be done at the refernce temperature
-    reference_temp = T(glass.temp)
+    reference_temp = T(glass.temperature)
 
-    # to work out the wavelength at the reference temperature we need the RIs of air at system temp and at reference temp
+    # to work out the wavelength at the reference temperature we need the RIs of air at system temperature and at reference temperature
     n_air_at_sys = absairindex(λ, temperature=temperature, pressure=pressure)
     n_air_at_ref = absairindex(λ, temperature=reference_temp)
 

@@ -6,15 +6,14 @@ module AGFFileReader
 
 using Polynomials
 using Plots
-using StringEncodings
 using Unitful
 using StaticArrays
 using Base: @.
 import Unitful: Length, Temperature, Quantity, Units
 using Unitful.DefaultSymbols
-using Pkg
-using Pkg.Artifacts
-using ForwardDiff
+
+
+
 
 
 include("constants.jl")

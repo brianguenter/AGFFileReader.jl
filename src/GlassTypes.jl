@@ -38,7 +38,7 @@ struct Glass <: AbstractGlass
     E₀::Float64
     E₁::Float64
     λₜₖ::Float64
-    temp::Float64
+    temperature::Float64
     ΔPgF::Float64
     PR::Float64
     relcost::Float64
@@ -57,7 +57,7 @@ struct Glass <: AbstractGlass
     p::Float64
     meltfreq::Int
 
-    function Glass(dispform, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, λmin, λmax, D₀, D₁, D₂, E₀, E₁, λₜₖ, temp, ΔPgF, PR, relcost, TCE, CR, status, SR, transmission, Nd, AR, FR, exclude_sub, Vd, ignore_thermal_exp, p, meltfreq)
+    function Glass(dispform, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, λmin, λmax, D₀, D₁, D₂, E₀, E₁, λₜₖ, temperature, ΔPgF, PR, relcost, TCE, CR, status, SR, transmission, Nd, AR, FR, exclude_sub, Vd, ignore_thermal_exp, p, meltfreq)
         # need a constructor to massage the transmission data
         if transmission === nothing
             transmission_s = nothing
@@ -67,7 +67,7 @@ struct Glass <: AbstractGlass
             transmission_s = SVector{100,SVector{3,Float64}}(transmission..., fill...)
             transmissionN = length(transmission)
         end
-        return new(dispform, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, λmin, λmax, D₀, D₁, D₂, E₀, E₁, λₜₖ, temp, ΔPgF, PR, relcost, TCE, CR, status, SR, transmission_s, transmissionN, Nd, AR, FR, exclude_sub, Vd, ignore_thermal_exp, p, meltfreq)
+        return new(dispform, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, λmin, λmax, D₀, D₁, D₂, E₀, E₁, λₜₖ, temperature, ΔPgF, PR, relcost, TCE, CR, status, SR, transmission_s, transmissionN, Nd, AR, FR, exclude_sub, Vd, ignore_thermal_exp, p, meltfreq)
     end
 end
 
@@ -224,7 +224,7 @@ function info(io::IO, glass::Glass)
         println(io, "     INVALID DISPERSION FORMULA!!")
     end
     println(io, "$(rpad("Valid wavelengths:", 50)) $(glass.λmin)μm to $(glass.λmax)μm")
-    println(io, "$(rpad("Reference temperature:", 50)) $(glass.temp)°C")
+    println(io, "$(rpad("Reference temperature:", 50)) $(glass.temperature)°C")
 
     if !isnan(glass.D₀) && (glass.D₀ != 0 || glass.D₁ != 0 || glass.D₂ != 0 || glass.E₀ != 0 || glass.E₁ != 0)
         println(io, "Thermal ΔRI coefficients:")

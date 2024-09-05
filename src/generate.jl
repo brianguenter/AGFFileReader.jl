@@ -3,7 +3,6 @@
 # See LICENSE in the project root for full license information.
 
 using DelimitedFiles: readdlm # used in agffile_to_catalog
-using StringEncodings
 using StaticArrays
 using Unitful
 import Unitful: Length, Temperature
@@ -75,7 +74,7 @@ Parse a `agffile` (.agf) into a native Dict, `catalogdict`, where each `kvp = (g
 | NM | raw name | dispform  | ?     |  Nd   | Vd                    | [exclude_sub  | status    | meltfreq] |
 | ED | TCE      | ?         | p     |  ΔPgF | [ignore_thermal_exp]  |
 | CD | C1       | C2        | C3    |  C4   | C5                    | C6            | C7        | C8        | C9    | C10   |
-| TD | D₀       | D₁        | D₂    |  E₀   | E₁                    | λₜₖ           | temp      |
+| TD | D₀       | D₁        | D₂    |  E₀   | E₁                    | λₜₖ           | temperature      |
 | OD | relcost  | CR        | FR    |  SR   | AR                    | PR
 | LD | λmin     | λmax      |
 | IT | T1       | T2        | T3    |
@@ -105,7 +104,7 @@ function agffile_to_catalog(agffile::AbstractString)
             repeat([NaN], 10)
         ),
         "TD" => (
-            "D₀ D₁ D₂ E₀ E₁ λₜₖ temp",
+            "D₀ D₁ D₂ E₀ E₁ λₜₖ temperature",
             [0, 0, 0, 0, 0, 0, 20]
         ),
         "OD" => (
@@ -243,7 +242,7 @@ function glassinfo_to_docstring(
             "$(pad("TCE (÷1e-6):"))$(getinfo("TCE"))",
             "$(pad("Density:"))$(getinfo("p"))g/m³",
             "$(pad("Valid wavelengths:"))$(getinfo("λmin"))μm to $(getinfo("λmax"))μm",
-            "$(pad("Reference Temp:"))$(getinfo("temp", 20.0))°C",
+            "$(pad("Reference Temp:"))$(getinfo("temperature", 20.0))°C",
             "```",
             "\"\"\""
         ], "\n")
@@ -257,7 +256,7 @@ function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString}, id::Integer, 
     for fn in string.(fieldnames(Glass))
         if fn in ["D₀", "D₁", "D₂", "E₀", "E₁", "λₜₖ"]
             push!(argstrings, repr(get(glassinfo, fn, 0.0)))
-        elseif fn == "temp"
+        elseif fn == "temperature"
             push!(argstrings, repr(get(glassinfo, fn, 20.0)))
         elseif fn == "transmission"
             v = get(glassinfo, "transmission", nothing)

@@ -5,7 +5,7 @@
 import HTTP
 import SHA
 import ZipFile
-using Pkg
+
 
 function match_agf_basename(s::AbstractString)
     m = match(r"^([a-zA-Z]+)\.(agf|AGF)$", basename(s))
