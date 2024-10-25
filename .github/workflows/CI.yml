@@ -28,8 +28,8 @@ jobs:
           - os: ubuntu-latest
             prefix: xvfb-run
     steps:
-      - uses: actions/checkout@v3
-      - uses: julia-actions/setup-julia@v2
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
@@ -78,7 +78,7 @@ jobs:
     name: Documentation
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1.6
