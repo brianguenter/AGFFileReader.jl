@@ -5,7 +5,6 @@
 module AGFFileReader
 
 using Polynomials
-using Plots
 using Unitful
 using StaticArrays
 using Base: @.
@@ -53,6 +52,9 @@ export add_agf
 # include build utility scripts to make testing them a bit easier
 include("generate.jl")
 
+#extension functions for graphing
+function plot_indices end
+function drawglassmap end
 end # module
 
 
