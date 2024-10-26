@@ -14,16 +14,17 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 ZipFile = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 
 [weakdeps]
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 GR = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 
 [extensions]
-AGFFileReaderExtensions = ["Plots", "GR","ForwardDiff"]
+AGFFileReaderExtensions = ["Plots", "GR", "ForwardDiff"]
 
 [compat]
 DataFrames = "1"
 DelimitedFiles = "1"
+ForwardDiff = "0.10"
 GR = "0.73"
 HTTP = "1"
 Plots = "1"
