@@ -78,7 +78,7 @@ end
         )
     end
 
-    @testitem "add to source file" setup = [Add_AGF]begin
+    @testitem "add to source file" setup = [Add_AGF] begin
         for name in split("a b")
             open(joinpath(tmpdir, "$name.agf"), "w") do io
                 write(io, "")
@@ -190,14 +190,19 @@ end
     end
 
     @testitem "Module Gen Tests" setup = [Generate] begin
+    using StaticArrays
+    using Unitful
+    using Unitful.DefaultSymbols
+
         AGFFileReader.generate_jls([CATALOG_NAME], MAIN_FILE, TMP_DIR, SOURCE_DIR, test=true)
-        include(MAIN_FILE)
+         include(MAIN_FILE)
+
 
         for row in eachrow(TEST_CAT_VALUES)
             name = row["name"]
-            @test "$CATALOG_NAME.$name" ∈ TEST_GLASS_NAMES
-
-            glass = getfield(getfield(Main, Symbol(CATALOG_NAME)), Symbol(name))
+             @test "$CATALOG_NAME.$name" ∈ TEST_GLASS_NAMES
+            println(TEST_GLASS_NAMES)
+             glass = getfield(getfield(@__MODULE__, Symbol(CATALOG_NAME)), Symbol(name))
             @test glass ∈ TEST_GLASSES
 
             for field in FIELDS
