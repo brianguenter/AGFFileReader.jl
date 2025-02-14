@@ -4,6 +4,7 @@
 
 using Test
 using TestItems
+using TestItemRunner
 using AGFFileReader
 
 using Base.Filesystem
@@ -11,6 +12,8 @@ using DataFrames: DataFrame
 using StaticArrays
 using Unitful
 using Unitful.DefaultSymbols
+
+@run_package_tests
 
 @testsnippet WrappedAllocs begin
     """
@@ -222,7 +225,6 @@ end
         @test_throws ErrorException index(g, (g.λmin - 1)μm)
         @test_throws ErrorException index(g, (g.λmax + 1)μm)
     end
-end
 
 @testitem "Glass Tests" setup = [WrappedAllocs] begin
     using Unitful
