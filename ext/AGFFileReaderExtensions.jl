@@ -2,7 +2,7 @@ module AGFFileReaderExtensions
 using AGFFileReader
 using GR
 using Plots
-import ForwardDiff
+using ForwardDiff.derivative
 
 #NOTE: for some reason drawglassmap doesn't work correctly, get error saying ForwardDiff is not defined. Not sure where this error is coming from.
 
