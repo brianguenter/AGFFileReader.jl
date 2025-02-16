@@ -3,6 +3,8 @@
 *.dll
 *.so
 
+#don't track coverage files
+*.cov
 
 ## VisualStudioCode.gitignore ##
 
