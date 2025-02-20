@@ -128,9 +128,7 @@ Transmission data:
           2.5μm           0.34         25.0mm
 ```
 
-```@docs
-AGFFileReader.plot_indices
-```
+You can plot indices using the [`AGFFileReader.plot_indices`](@ref) function
 
 Example:
 
@@ -140,9 +138,7 @@ julia> plot_indices(SCHOTT.FK3)
 
 ![Refractive Index vs. wavelength for SCHOTT.FK3](assets/SCHOTT.FK3-indexplot.png)
 
-```@docs 
-AGFFileReader.drawglassmap
-```
+You can draw glass maps using the [`AGFFileReader.drawglassmap`](@ref) function and filter the results in sophisticated ways.
 
 Example:
 
