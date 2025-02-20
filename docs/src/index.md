@@ -3,8 +3,6 @@ CurrentModule = AGFFileReader
 ```
 
 # AGFFileReader
-Documentation for [AGFFileReader](https://github.com/rambunctiousapple/AGFFileReader.jl).
-
 AGFFileReader is a library for reading AGF files, a file format widely used in optical design. The contents of an AGF file can vary but usually each file contains material property information for several optical materials made by a single manufacturer. By convention the name of the AGF file is assumed to be the manufacturer name. For example SCHOTT.AGF contains material data for glasses made by the Schott company. AGF files are available from many publicly accessible websites. 
 
 AGFFileReader automates the process of downloading and installing an extensive library of AGF files from many sources. When the AGFFileReader package is first installed the build process will attempt to download AGF glass files from the sources in the file `data/sources.txt`. 
