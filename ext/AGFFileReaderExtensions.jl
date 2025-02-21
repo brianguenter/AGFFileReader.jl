@@ -2,17 +2,11 @@ module AGFFileReaderExtensions
 using AGFFileReader
 using GR
 using Plots
-import ForwardDiff
+using ForwardDiff.derivative
 
 #NOTE: for some reason drawglassmap doesn't work correctly, get error saying ForwardDiff is not defined. Not sure where this error is coming from.
 
-"""
-    plot_indices(glass::AbstractGlass; polyfit=false, fiterror=false, degree=5, temperature=20°C, pressure=1Atm, nsamples=300, sampling_domain="wavelength")
 
-Plot the refractive index for `glass` for `nsamples` within its valid range of wavelengths, optionally at `temperature` and `pressure`.
-`polyfit` will show a polynomial of optionally specified `degree` fitted to the data, `fiterror` will also show the fitting error of the result.
-`sampling_domain` specifies whether the samples will be spaced uniformly in "wavelength" or "wavenumber".
-"""
 function plot_indices(glass::AbstractGlass; polyfit::Bool=false, fiterror::Bool=false, degree::Int=5, temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF, nsamples::Int=300, sampling_domain::String="wavelength")
     if isair(glass)
         wavemin = 380 * u"nm"
@@ -61,25 +55,7 @@ function plot_indices(glass::AbstractGlass; polyfit::Bool=false, fiterror::Bool=
 end
 
 
-"""
-    drawglassmap(glasscatalog::Module; λ::Length = 550nm, glassfontsize::Integer = 3, showprefixglasses::Bool = false)
 
-Draw a scatter plot of index vs dispersion (the derivative of index with respect to wavelength). Both index and
-dispersion are computed at wavelength λ.
-
-Choose glasses to graph using the glassfilterprediate argument. This is a function that receives a Glass object and returns true if the glass should be graphed.
-
-If showprefixglasses is true then glasses with names like `F_BAK7` will be displayed. Otherwise glasses that have a
-leading letter prefix followed by an underscore, such as `F_`, will not be displayed.
-
-The index formulas for some glasses may give incorrect results if λ is outside the valid range for that glass. This can
-give anomalous results, such as indices less than zero or greater than 6. To filter out these glasses set maximumindex
-to a reasonable value such as 3.0.
-
-example: plot only glasses that do not contain the strings "E_" and "J_"
-
-drawglassmap(NIKON,showprefixglasses = true,glassfilterpredicate = (x) -> !occursin("J_",string(x)) && !occursin("E_",string(x)))
-"""
 function drawglassmap(glasscatalog::Module; λ::Length=550nm, glassfontsize::Integer=3, showprefixglasses::Bool=false, minindex=1.0, maxindex=3.0, mindispersion=-0.3, maxdispersion=0.0, glassfilterpredicate=(x) -> true)
     wavelength = Float64(ustrip(uconvert(μm, λ)))
     indices = Vector{Float64}(undef, 0)

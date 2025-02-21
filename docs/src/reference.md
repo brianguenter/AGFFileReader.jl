@@ -3,5 +3,5 @@
 ```
 
 ```@autodocs
-Modules = [AGFFileReader]
+Modules = [AGFFileReader ,AGFFileReader.EYE]
 ```

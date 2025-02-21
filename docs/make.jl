@@ -24,5 +24,5 @@ makedocs(;
 deploydocs(;
     repo="github.com/rambunctiousapple/AGFFileReader.jl.git",
     devbranch="main",
-    push_preview = true,
+    push_preview=true,
 )
