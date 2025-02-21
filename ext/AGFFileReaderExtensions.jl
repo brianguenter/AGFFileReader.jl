@@ -4,6 +4,7 @@ using GR
 using Plots
 using ForwardDiff: derivative
 using Unitful
+using Unitful: Temperature
 
 #NOTE: for some reason drawglassmap doesn't work correctly, get error saying ForwardDiff is not defined. Not sure where this error is coming from.
 
