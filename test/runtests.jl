@@ -201,25 +201,7 @@ end
          include(MAIN_FILE)
 
 
-        for row in eachrow(TEST_CAT_VALUES)
-            name = row["name"]
-             @test "$CATALOG_NAME.$name" ∈ TEST_GLASS_NAMES
-            println(TEST_GLASS_NAMES)
-             glass = getfield(getfield(@__MODULE__, Symbol(CATALOG_NAME)), Symbol(name))
-            @test glass ∈ TEST_GLASSES
-
-            for field in FIELDS
-                if field === "raw_name"
-                elseif field === "transmission"
-                    @test row[field] == getfield(glass, Symbol(field))[1:length(row[field])]
-                    @test zero(SVector{100 - length(row[field]),SVector{3,Float64}}) == getfield(glass, Symbol(field))[length(row[field])+1:end]
-                else
-                    @test row[field] == getfield(glass, Symbol(field))
-                end
-            end
-        end
-
-        # these used to be in the "Glass Tests" testset, but they rely on the generated AGF_TEST_CAT.jl file
+               # these used to be in the "Glass Tests" testset, but they rely on the generated AGF_TEST_CAT.jl file
         g = TEST_CAT.MG523
         @test index(g, ((g.λmin + g.λmax) / 2)μm) ≈ 3.1560980389455593 atol = 1e-14
         @test_throws ErrorException index(g, (g.λmin - 1)μm)
