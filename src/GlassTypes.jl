@@ -269,5 +269,6 @@ function info(io::IO, glass::Glass)
         end
     end
 end
+export info
 
 info(g::AbstractGlass) = info(stdout, g)
