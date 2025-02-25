@@ -61,6 +61,8 @@ Plot the refractive index for `glass` for `nsamples` within its valid range of w
 `sampling_domain` specifies whether the samples will be spaced uniformly in "wavelength" or "wavenumber".
 """
 function plot_indices end
+export plot_indices
+
 
 """
     drawglassmap(glasscatalog::Module; λ::Length = 550nm, glassfontsize::Integer = 3, showprefixglasses::Bool = false)
@@ -82,6 +84,8 @@ example: plot only glasses that do not contain the strings "E_" and "J_"
 drawglassmap(NIKON,showprefixglasses = true,glassfilterpredicate = (x) -> !occursin("J_",string(x)) && !occursin("E_",string(x)))
 """
 function drawglassmap end
+export drawglassmap
+
 end # module
 
 

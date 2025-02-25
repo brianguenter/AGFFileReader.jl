@@ -45,9 +45,6 @@ function generate_jls(
         open(catalogpath, "w") do io
             write(io, modstring)
         end
-
-        # track glass names for lookup purposes
-        append!(glassnames, ["$(catalogname).$(glassname)" for glassname in keys(catalog)])
     end
 
     # generate the parent main file (.jl)
@@ -56,7 +53,6 @@ function generate_jls(
         "",
         ["include(\"$(catalogfile)\")" for catalogfile in catalogfiles]...,
         "",
-        "const $(glasstype)_GLASS_NAMES = [$(join(repr.(glassnames), ", "))]",
         "const $(glasstype)_GLASSES = [$(join(glassnames, ", "))]",
         ""
     ]
