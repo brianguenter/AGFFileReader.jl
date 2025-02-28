@@ -2,8 +2,6 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # See LICENSE in the project root for full license information.
 
-module GlassData
-
 using DelimitedFiles: readdlm # used in agffile_to_catalog
 using StaticArrays
 using Unitful
@@ -15,7 +13,7 @@ const GLASSCAT_DIR = @__DIR__ # contains GlassCat.jl (pre-existing)
 const AGF_DIR = joinpath(GLASSCAT_DIR, "data", "agf") # contains SCHOTT.agf, SUMITA.agf, etc.
 const JL_DIR = joinpath(GLASSCAT_DIR, "data", "jl") # contains AGFGlasscat.jl, SCHOTT.jl, etc.
 
-const SOURCES_PATH = joinpath(GLASSCAT_DIR, "data", "sources.txt")
+const SOURCES_PATH = joinpath(GLASSCAT_DIR, "sources.txt")
 const AGFGLASSCAT_PATH = joinpath(JL_DIR, "AGFGlassCat.jl")
 
 """
@@ -283,5 +281,21 @@ function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString}, id::Integer, 
 end
 
 
-generate_jls
-end #module
+macro download_AGF_files()
+    include(joinpath(GLASSCAT_DIR, "GlassTypes.jl"))
+    include(joinpath(GLASSCAT_DIR, "sources.jl"))
+
+    mkpath(AGF_DIR)
+    mkpath(JL_DIR)
+
+    # Build/verify a source directory using information from sources.txt
+    sources = split.(readlines(SOURCES_PATH))
+    verify_sources!(sources, AGF_DIR)
+    verified_source_names = first.(sources)
+
+    # Use verified sources to generate required .jl files
+    @info "Using sources: $(join(verified_source_names, ", ", " and "))"
+    generate_jls(verified_source_names, AGFGLASSCAT_PATH, JL_DIR, AGF_DIR)
+    include(joinpath(GLASSCAT_DIR, Data,))
+end
+export download_AGF_files

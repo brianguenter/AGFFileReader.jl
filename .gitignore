@@ -54,5 +54,5 @@ Manifest.toml
 src/Cloud/amlconf
 
 # don't track glass files since they should be created by user at each install.
-data/agf/*
-data/jl/*
+src/data/agf/*
+src/data/jl/*
