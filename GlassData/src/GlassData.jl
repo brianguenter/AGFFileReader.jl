@@ -2,10 +2,21 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # See LICENSE in the project root for full license information.
 
+module GlassData
+
 using DelimitedFiles: readdlm # used in agffile_to_catalog
 using StaticArrays
 using Unitful
 import Unitful: Length, Temperature
+
+
+# paths for GlassCat source file builds
+const GLASSCAT_DIR = @__DIR__ # contains GlassCat.jl (pre-existing)
+const AGF_DIR = joinpath(GLASSCAT_DIR, "data", "agf") # contains SCHOTT.agf, SUMITA.agf, etc.
+const JL_DIR = joinpath(GLASSCAT_DIR, "data", "jl") # contains AGFGlasscat.jl, SCHOTT.jl, etc.
+
+const SOURCES_PATH = joinpath(GLASSCAT_DIR, "data", "sources.txt")
+const AGFGLASSCAT_PATH = joinpath(JL_DIR, "AGFGlassCat.jl")
 
 """
     generate_jls(sourcenames::Vector{<:AbstractString}, mainfile::AbstractString, jldir::AbstractString, agfdir::AbstractString; test::Bool = false)
@@ -270,3 +281,7 @@ function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString}, id::Integer, 
     end
     return join(argstrings, ", ")
 end
+
+
+generate_jls
+end #module

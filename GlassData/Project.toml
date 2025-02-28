@@ -1,0 +1,14 @@
+name = "GlassData"
+uuid = "1c9ecb4a-a6be-4403-b4b4-49bf1148a7c4"
+authors = ["brianguenter <1brianguenter@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
+[compat]
+DelimitedFiles = "1.9.1"
+StaticArrays = "1.9.12"
+Unitful = "1.22.0"
