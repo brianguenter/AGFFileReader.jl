@@ -49,9 +49,6 @@ export plot_indices, index, polyfit_indices, absairindex, absorption, drawglassm
 include("sources.jl")
 export add_agf
 
-# include build utility scripts to make testing them a bit easier
-include("generate.jl")
-
 #extension functions for graphing
 """
     plot_indices(glass::AbstractGlass; polyfit=false, fiterror=false, degree=5, temperature=20°C, pressure=1Atm, nsamples=300, sampling_domain="wavelength")
