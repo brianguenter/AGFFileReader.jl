@@ -14,8 +14,6 @@ using Unitful.DefaultSymbols
 using DelimitedFiles: readdlm # used in agffile_to_catalog
 
 
-
-
 include("constants.jl")
 
 include("GlassTypes.jl")
@@ -31,6 +29,10 @@ export Air, isair
 # end
 include("GlassDownload.jl")
 
+#if the glass catalogs have been downloaded include them. Required because can't ship glass catalogs with the code and Registrator doesn't allow build process to modify source. When building on Julia Registrator server AGFGLASSCAT_PATH won't exist so this file won't be included.
+if isfile(AGFGLASSCAT_PATH)
+    include(AGFGLASSCAT_PATH)
+end
 
 include("OTHER.jl")
 # include functionality for managing runtime (dynamic) glass cats: MIL_GLASSES and MODEL_GLASSES

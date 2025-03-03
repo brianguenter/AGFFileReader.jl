@@ -43,8 +43,8 @@ function generate_jls(
 
         # parse the catalog into a module string and write it to a catalog file (.jl)
         id, modstring = catalog_to_modstring(id, catalogname, catalog, glasstype)
-        push!(catalogfiles, "$(catalogname).jl")
-        catalogpath = joinpath(jldir, catalogfiles[end])
+        push!(catalogfiles, "$(catalogname)")
+        catalogpath = joinpath(jldir, catalogfiles[end] * ".jl")
         @info "Writing $catalogpath"
         open(catalogpath, "w") do io
             write(io, modstring)
@@ -55,9 +55,9 @@ function generate_jls(
     agfstrings = [
         "export $(join(sourcenames, ", "))",
         "",
-        ["include(\"$(catalogfile)\")" for catalogfile in catalogfiles]...,
+        ["include(\"$(catalogfile).jl\")" for catalogfile in catalogfiles]...,
         "",
-        "const $(glasstype)_GLASSES = [$(join(glassnames, ", "))]",
+        "const $(glasstype)_GLASSES = [$(join(catalogfiles, ", "))]",
         ""
     ]
     @info "Writing $mainfile"
@@ -276,7 +276,7 @@ function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString}, id::Integer, 
 end
 
 
-macro download_AGF_files()
+function download_AGF_files()
     include(joinpath(GLASSCAT_DIR, "GlassTypes.jl"))
     include(joinpath(GLASSCAT_DIR, "sources.jl"))
 
@@ -293,4 +293,4 @@ macro download_AGF_files()
     generate_jls(verified_source_names, AGFGLASSCAT_PATH, JL_DIR, AGF_DIR)
     include(joinpath(JL_DIR, "AGFGlassCat.jl"))
 end
-export @download_AGF_files
+export download_AGF_files
