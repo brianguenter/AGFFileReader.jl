@@ -2,11 +2,6 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # See LICENSE in the project root for full license information.
 
-using DelimitedFiles: readdlm # used in agffile_to_catalog
-using StaticArrays
-using Unitful
-import Unitful: Length, Temperature
-
 
 # paths for GlassCat source file builds
 const GLASSCAT_DIR = @__DIR__ # contains GlassCat.jl (pre-existing)
@@ -296,6 +291,6 @@ macro download_AGF_files()
     # Use verified sources to generate required .jl files
     @info "Using sources: $(join(verified_source_names, ", ", " and "))"
     generate_jls(verified_source_names, AGFGLASSCAT_PATH, JL_DIR, AGF_DIR)
-    include(joinpath(GLASSCAT_DIR, Data,))
+    include(joinpath(JL_DIR, "AGFGlassCat.jl"))
 end
-export download_AGF_files
+export @download_AGF_files
