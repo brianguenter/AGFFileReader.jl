@@ -11,6 +11,7 @@ using Base: @.
 import Unitful: Length, Temperature, Quantity, Units
 using Unitful.DefaultSymbols
 
+using DelimitedFiles: readdlm # used in agffile_to_catalog
 
 
 
@@ -23,16 +24,14 @@ include("BaseGlasses.jl")
 include("Air.jl")
 export Air, isair
 
-# include built glass cat source files
-@assert AGFGLASSCAT_PATH === joinpath(@__DIR__, "data", "jl", "AGFGlassCat.jl")
-
 #need to fix this so it runs build process if agf data is not already downloaded
 # if !isfile(AGFGLASSCAT_PATH)
 #     @warn "$(basename(AGFGLASSCAT_PATH)) not found! Running build steps."
 #     Pkg.build("AGFFileReader"; verbose=true)
 # end
+include("GlassDownload.jl")
 
-include("data/jl/AGFGlassCat.jl") # this needs to be literal for intellisense to work
+
 include("OTHER.jl")
 # include functionality for managing runtime (dynamic) glass cats: MIL_GLASSES and MODEL_GLASSES
 include("runtime.jl")
@@ -48,9 +47,6 @@ export plot_indices, index, polyfit_indices, absairindex, absorption, drawglassm
 # include utility functions for maintaining the AGF source list
 include("sources.jl")
 export add_agf
-
-# include build utility scripts to make testing them a bit easier
-include("generate.jl")
 
 #extension functions for graphing
 """
