@@ -21,7 +21,7 @@ julia> glasscatalogs()
  ⋮
 ```
 """
-glasscatalogs() = _child_modules(AGFFileReader)
+glass_catalogs() = _child_modules(AGFFileReader)
 
 """
     glassnames(catalog::Module)
@@ -37,8 +37,8 @@ julia> glassnames(AGFFileReader.CARGILLE)
  "OG081160"
 ```
 """
-function glassnames(catalog::Module)
-    glass_names = names(catalog, all = true, imported = false)
+function glass_names(catalog::Module)
+    glass_names = names(catalog, all=true, imported=false)
     glasses = []
     for glass_name in glass_names
         glass_name_str = string(glass_name)
@@ -66,7 +66,7 @@ julia> glassnames()
    OpticSim.AGFFileReader.SUMITA => ["BAF1", "BAF10"  …  "ZNSF8"]
 ```
 """
-glassnames() = [m => glassnames(m) for m in _child_modules(AGFFileReader)]
+glass_names() = [m => glass_names(m) for m in _child_modules(AGFFileReader)]
 
 """
     findglass(condition::Function) -> Vector{Glass}
@@ -87,7 +87,7 @@ julia> findglass(x -> (x.Nd > 2.3 && x.λmin < 0.5 && x.λmax > 0.9))
  INFRARED.ZNS_VIS
 ```
 """
-function findglass(condition::Function)
+function find_glass(condition::Function)
     # TODO - make the condition easier to specify (accessor functions for fields?)
     out = Vector{Glass}(undef, 0)
     for g in AGF_GLASSES
@@ -104,7 +104,7 @@ function findglass(condition::Function)
 end
 
 function _child_modules(m::Module)
-    ns = names(m, imported = false, all = true)
+    ns = names(m, imported=false, all=true)
     ms = []
     for n in ns
         if n != nameof(m)

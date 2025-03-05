@@ -52,7 +52,7 @@ export glassfromMIL, modelglass
 
 # include functions for searching the glass cats
 include("search.jl")
-export glasscatalogs, glassnames, findglass
+export glass_catalogs, glass_names, find_glass
 
 include("utilities.jl")
 export plot_indices, index, polyfit_indices, absairindex, absorption, drawglassmap
