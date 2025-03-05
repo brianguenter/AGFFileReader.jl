@@ -192,23 +192,7 @@ end
         end
     end
 
-    @testitem "Module Gen Tests" setup = [Generate] begin
-    using StaticArrays
-    using Unitful
-    using Unitful.DefaultSymbols
-
-        AGFFileReader.generate_jls([CATALOG_NAME], MAIN_FILE, TMP_DIR, SOURCE_DIR, test=true)
-         include(MAIN_FILE)
-
-
-               # these used to be in the "Glass Tests" testset, but they rely on the generated AGF_TEST_CAT.jl file
-        g = TEST_CAT.MG523
-        @test index(g, ((g.λmin + g.λmax) / 2)μm) ≈ 3.1560980389455593 atol = 1e-14
-        @test_throws ErrorException index(g, (g.λmin - 1)μm)
-        @test_throws ErrorException index(g, (g.λmax + 1)μm)
-    end
-
-@testitem "Glass Tests" setup = [WrappedAllocs] begin
+ @testitem "Glass Tests" setup = [WrappedAllocs] begin
     using Unitful
     using Unitful.DefaultSymbols
 

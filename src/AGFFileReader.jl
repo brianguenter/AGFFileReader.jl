@@ -4,6 +4,7 @@
 
 module AGFFileReader
 
+using Scratch
 using Polynomials
 using Unitful
 using StaticArrays
@@ -13,6 +14,22 @@ using Unitful.DefaultSymbols
 
 using DelimitedFiles: readdlm # used in agffile_to_catalog
 
+#scratch data directory to store glass files
+DATA_DIR = ""
+SCRATCH_NAME = "GlassData"
+
+function __init__()
+    scratch_dir = @get_scratch!(SCRATCH_NAME)
+
+    glass_defs = joinpath(scratch_dir, "AGFGlassCat.jl")
+
+    if !isfile(glass_defs)
+        download_AGF_files()
+    end
+    if isfile(glass_defs)
+        include(glass_defs)
+    end
+end
 
 include("constants.jl")
 
@@ -22,17 +39,9 @@ include("BaseGlasses.jl")
 include("Air.jl")
 export Air, isair
 
-#need to fix this so it runs build process if agf data is not already downloaded
-# if !isfile(AGFGLASSCAT_PATH)
-#     @warn "$(basename(AGFGLASSCAT_PATH)) not found! Running build steps."
-#     Pkg.build("AGFFileReader"; verbose=true)
-# end
 include("GlassDownload.jl")
 
 #if the glass catalogs have been downloaded include them. Required because can't ship glass catalogs with the code and Registrator doesn't allow build process to modify source. When building on Julia Registrator server AGFGLASSCAT_PATH won't exist so this file won't be included.
-if isfile(AGFGLASSCAT_PATH)
-    include(AGFGLASSCAT_PATH)
-end
 
 include("OTHER.jl")
 # include functionality for managing runtime (dynamic) glass cats: MIL_GLASSES and MODEL_GLASSES
