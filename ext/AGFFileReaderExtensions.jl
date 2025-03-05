@@ -58,7 +58,7 @@ end
 
 
 
-function drawglassmap(glasscatalog::Module; λ::Length=550nm, glassfontsize::Integer=3, showprefixglasses::Bool=false, minindex=1.0, maxindex=3.0, mindispersion=-0.3, maxdispersion=0.0, glassfilterpredicate=(x) -> true)
+function draw_glass_map(glasscatalog::Module; λ::Length=550nm, glassfontsize::Integer=3, showprefixglasses::Bool=false, minindex=1.0, maxindex=3.0, mindispersion=-0.3, maxdispersion=0.0, glassfilterpredicate=(x) -> true)
     wavelength = Float64(ustrip(uconvert(μm, λ)))
     indices = Vector{Float64}(undef, 0)
     dispersions = Vector{Float64}(undef, 0)

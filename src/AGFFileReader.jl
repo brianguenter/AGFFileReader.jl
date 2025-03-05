@@ -55,7 +55,7 @@ include("search.jl")
 export glass_catalogs, glass_names, find_glass
 
 include("utilities.jl")
-export plot_indices, index, polyfit_indices, absairindex, absorption, drawglassmap
+export plot_indices, index, polyfit_indices, absairindex, absorption, draw_glass_map
 
 # include utility functions for maintaining the AGF source list
 include("sources.jl")
@@ -92,8 +92,8 @@ example: plot only glasses that do not contain the strings "E_" and "J_"
 
 drawglassmap(NIKON,showprefixglasses = true,glassfilterpredicate = (x) -> !occursin("J_",string(x)) && !occursin("E_",string(x)))
 """
-function drawglassmap end
-export drawglassmap
+function draw_glass_map end
+export draw_glass_map
 
 end # module
 
