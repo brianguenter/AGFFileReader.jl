@@ -5,11 +5,8 @@
 
 # paths for GlassCat source file builds
 const GLASSCAT_DIR = @__DIR__ # contains GlassCat.jl (pre-existing)
-const AGF_DIR = joinpath(GLASSCAT_DIR, "data", "agf") # contains SCHOTT.agf, SUMITA.agf, etc.
-const JL_DIR = joinpath(GLASSCAT_DIR, "data", "jl") # contains AGFGlasscat.jl, SCHOTT.jl, etc.
-
 const SOURCES_PATH = joinpath(GLASSCAT_DIR, "sources.txt")
-const AGFGLASSCAT_PATH = joinpath(JL_DIR, "AGFGlassCat.jl")
+
 
 """
     generate_jls(sourcenames::Vector{<:AbstractString}, mainfile::AbstractString, jldir::AbstractString, agfdir::AbstractString; test::Bool = false)
@@ -249,39 +246,43 @@ end
 
 
 function download_AGF_files()
-    global DATA_DIR = @get_scratch!("Glass_Data")
+    global DATA_DIR = @get_scratch!(SCRATCH_NAME)
 
-    AGF_DIR = mkpath(joinpath(DATA_DIR, "agf"))
-    JL_DIR = mkpath(joinpath(DATA_DIR, "jl"))
+    agf_dir = mkpath(joinpath(DATA_DIR, "agf"))
+    jl_dir = mkpath(joinpath(DATA_DIR, "jl"))
 
     # Build/verify a source directory using information from sources.txt
     sources = split.(readlines(SOURCES_PATH))
-    verify_sources!(sources, AGF_DIR)
+
+    verify_sources!(sources, agf_dir)
     verified_source_names = first.(sources)
 
     # Use verified sources to generate required .jl files
     @info "Using sources: $(join(verified_source_names, ", ", " and "))"
     for source in verified_source_names
-        generate_jl(source, JL_DIR, AGF_DIR)
+        generate_jl(source, jl_dir, agf_dir)
     end
 
     # generate the parent main file (.jl)
     agfstrings = [
         "export $(join(verified_source_names, ", "))",
         "",
-        ["include(raw\"$(joinpath(JL_DIR,(source)* ".jl"))\")" for source in verified_source_names]...,
+        ["include(raw\"$(joinpath(jl_dir,(source)* ".jl"))\")" for source in verified_source_names]...,
         "",
         "const AGF_GLASSES = [$(join(verified_source_names, ", "))]",
         ""
     ]
-    @info "Writing $AGFGLASSCAT_PATH"
-    open(joinpath(JL_DIR, "AGFGlassCat.jl"), "w") do io
+    glass_cat = joinpath(jl_dir, "AGFGlassCat.jl")
+    @info "Writing $glass_cat)"
+    open(glass_cat, "w") do io
         write(io, join(agfstrings, "\n"))
     end
-
-    include(joinpath(JL_DIR, "AGFGlassCat.jl"))
 end
 export download_AGF_files
+
+function add_AGF_file()
+    global data_dir = @get_scratch!(SCRATCH_NAME)
+end
 
 function clear_AGF_files()
     if ispath(DATA_DIR)

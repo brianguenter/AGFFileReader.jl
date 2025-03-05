@@ -21,13 +21,15 @@ SCRATCH_NAME = "GlassData"
 function __init__()
     scratch_dir = @get_scratch!(SCRATCH_NAME)
 
-    glass_defs = joinpath(scratch_dir, "AGFGlassCat.jl")
+    glass_defs = joinpath(scratch_dir, "jl/AGFGlassCat.jl")
 
     if !isfile(glass_defs)
         download_AGF_files()
     end
     if isfile(glass_defs)
         include(glass_defs)
+    else
+        @warn "No glass files found. This could be because you did not have internet access to access the glass files."
     end
 end
 

@@ -1,39 +1,15 @@
 ```@meta
 CurrentModule = AGFFileReader
 ```
-# Installation
-Installing is a little more complicated than a typical package because of three conflicting constraints: 
-* Copyright makes it infeasible to include glass catalog files with the distribution so they must be downloaded at each install
-* The Julia registry will not accept packages that modify source during build
-* Code completion on glasses, e.g., if you type `NIKON.B` you will be shown all the NIKON glasses whose names begin with `B`. Otherwise you must memorize the Nikon glass catalog.
-
-This means the glass files can't be included as part of the source when the package is installed. Instead do this at the Julia REPL:
-* Add `AGFFileReader` to your package:
-```julia
-YourPackageNameHere pkg> add AGFFileReader
-
-julia> using AGFFileReader
-
-julia> download_AGF_files() #download glass files and generate Julia source files with glass info 
-```
-Now exit the REPL. The next time you use the `AGFFileReader` package all the glass files will be properly defined. For example, the Nikon glass catalog will have a corresponding Julia module named `NIKON` and each glass type will be a constant in that module. 
-
-Now code completion will work properly in both the REPL and VSCode:
-```julia
-julia> NIKON.BA
-BAF10   BAF11   BAF3
-BAF4    BAF8    BAK2
-BAK4    BASF12  BASF2
-BASF4   BASF6   BASF7
-BASF8
-```
 
 # AGFFileReader
 AGFFileReader is a library for reading AGF files, a file format widely used in optical design. The contents of an AGF file can vary but usually each file contains material property information for several optical materials made by a single manufacturer. By convention the name of the AGF file is assumed to be the manufacturer name. For example SCHOTT.AGF contains material data for glasses made by the Schott company. AGF files are available from many publicly accessible websites. 
 
-AGFFileReader automates the process of downloading and installing an extensive library of AGF files from many sources. When the AGFFileReader package is first installed the build process will attempt to download AGF glass files from the sources in the file `data/sources.txt`. 
+AGFFileReader automates the process of downloading and installing an extensive library of AGF files from many sources. When the AGFFileReader package is first installed the build process will attempt to download AGF glass files from the sources in the file `sources.txt`. 
 
-AGFFileReader transforms the information in the AGF files into Julia files stored in the `data` subdirectory, which is created automatically during the build process. Each AGF file gets its own module, whose name will match that of the AGF file. Each material is assigned a corresponding Julia type. 
+AGFFileReader transforms the information in the AGF files into Julia files stored in the `data` subdirectory, which is created automatically during the build process. Each AGF file gets its own module, whose name will match that of the AGF file. Each material is assigned a corresponding Julia type.
+
+You can add additional glass files using the [`add_AGF_file`](@ref) function.
  
  ## Using installed glasses
 
