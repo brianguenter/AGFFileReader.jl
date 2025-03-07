@@ -3,11 +3,11 @@ CurrentModule = AGFFileReader
 ```
 
 # AGFFileReader
-AGFFileReader is a library for reading AGF files, a file format widely used in optical design. The contents of an AGF file can vary but usually each file contains material property information for several optical materials made by a single manufacturer. By convention the name of the AGF file is assumed to be the manufacturer name. For example SCHOTT.AGF contains material data for glasses made by the Schott company. AGF files are available from many publicly accessible websites. 
+AGFFileReader is a library for reading AGF files. The contents of an AGF file can vary but usually each file contains material property information for several optical materials made by a single manufacturer. By convention the name of the AGF file is assumed to be the manufacturer name. For example SCHOTT.AGF contains material data for glasses made by the Schott company. AGF files are available from many publicly accessible websites. 
 
 AGFFileReader automates the process of downloading and installing an extensive library of AGF files from many sources. When the AGFFileReader package is first installed the build process will attempt to download AGF glass files from the sources in the file `sources.txt`. 
 
-AGFFileReader transforms the information in the AGF files into Julia files stored in the `data` subdirectory, which is created automatically during the build process. Each AGF file gets its own module, whose name will match that of the AGF file. Each material is assigned a corresponding Julia type.
+AGFFileReader transforms the information in the AGF files into Julia files which are created automatically during the build process. Each AGF file gets its own module, whose name will match that of the AGF file. Each material is assigned a corresponding Julia type. 
 
 You can add additional glass files using the [`add_AGF_file`](@ref) function.
  
@@ -20,16 +20,50 @@ AGFFileReader.SUMITA.LAK7
 AGFFileReader.SCHOTT.PK3
 ```
 
-All glasses and catalogs are exported in their respective modules, so it is possible to invoke `using` calls for convenience, e.g.
+All glasses and catalogs are exported in their respective modules:
 
 ```julia
-using AGFFileReader
-SCHOTT.PK3
-using AGFFileReader.SCHOTT
-N_BK7
+julia> using AGFFileReader
+
+julia> NIKON.PK2
+Glass
+
+julia> using AGFFileReader.NIKON
+
+julia> PK2
 ```
+To see all loaded glass catalogs:
+```julia
+julia> glass_catalogs()
+14-element Vector{Any}:
+ AGFFileReader.ARTON
+ AGFFileReader.BIREFRINGENT
+ ...
+ AGFFileReader.UMICORE
+ AGFFileReader.ZEON
+ ```
 
+ To see all glasses in a catalog:
+ ```julia
+ julia> glass_names(HIKARI)
+331-element Vector{Any}:
+ :BAF10
+ :BAF11
+ ...
+ :SSK2
+ :SSK8
+ ```
 
+ To get all glasses currently loaded in all catalogs:
+ ```julia
+ julia> glass_names()
+14-element Vector{Pair{Module, Vector{Any}}}:
+        AGFFileReader.ARTON => [:D4531F, :D4532, :D4540, :DX4900, :F4520, :F5023]
+ AGFFileReader.BIREFRINGENT => [:ADP, :ADP_E, :AGASS3, :AGASS3_E, :AGGAS2, :AGGAS2_E, :AGGASE2, :AGGASE2_E, :AL2O3, :AL2O3_E  …  :TE, :TEO2, :TEO2_E, :TE_E, :YVO4, :YVO4_E, :ZNGEP2, :ZNGEP2_E, :ZNO, :ZNO_E]
+    ...
+      AGFFileReader.UMICORE => [:GASIR1, :GASIR2]
+         AGFFileReader.ZEON => [:E48R, :_330R, :_480R]
+```
 
 At the Julia REPL you can use tab to autocomplete glass names or double tab to show glass types available in a particular glass library. For example, this is the result of typing tab twice after typing the intitial string `SCHOTT.N_LA`:
 
