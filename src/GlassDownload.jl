@@ -235,6 +235,13 @@ function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString})
                 str = join(["($(join(a, ", ")))" for a in v], ", ")
                 push!(argstrings, "[$str]")
             end
+        elseif fn == "relcost"
+            cost = get(glassinfo, fn, -1)
+            if isa(cost, String) #some glass files use "_" to mean there is no relcost value. SCHOTT does this.
+                push!(argstrings, repr(-1))
+            else
+                push!(argstrings, repr(cost))
+            end
         elseif fn == "transmissionN"
             continue
         else
@@ -260,6 +267,7 @@ function download_AGF_files()
     # Use verified sources to generate required .jl files
     @info "Using sources: $(join(verified_source_names, ", ", " and "))"
     for source in verified_source_names
+        @info "Generating jl file for $source"
         generate_jl(source, jl_dir, agf_dir)
     end
 
@@ -280,8 +288,10 @@ function download_AGF_files()
 end
 export download_AGF_files
 
+#TODO
 function add_AGF_file()
     global data_dir = @get_scratch!(SCRATCH_NAME)
+    throw(ErrorException("not implemented"))
 end
 
 function clear_AGF_files()

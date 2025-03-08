@@ -9,7 +9,6 @@ AGFFileReader automates the process of downloading and installing an extensive l
 
 AGFFileReader transforms the information in the AGF files into Julia files which are created automatically during the build process. Each AGF file gets its own module, whose name will match that of the AGF file. Each material is assigned a corresponding Julia type. 
 
-You can add additional glass files using the [`add_AGF_file`](@ref) function.
  
  ## Using installed glasses
 
@@ -172,12 +171,12 @@ julia> plot_indices(SCHOTT.FK3)
 
 ![Refractive Index vs. wavelength for SCHOTT.FK3](assets/SCHOTT.FK3-indexplot.png)
 
-You can draw glass maps using the [`AGFFileReader.drawglassmap`](@ref) function and filter the results in sophisticated ways.
+You can draw glass maps using the [`AGFFileReader.draw_glass_map`](@ref) function and filter the results in sophisticated ways.
 
 Example:
 
 ```julia
-julia> drawglassmap(HIKARI)
+julia> draw_glass_map(HIKARI)
 ```
 
 ![Glass map for the HIKARI glass catalog](assets/glassmapHIKARI.png)

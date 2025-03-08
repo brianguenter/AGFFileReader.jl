@@ -74,7 +74,7 @@ export plot_indices
 
 
 """
-    drawglassmap(glasscatalog::Module; λ::Length = 550nm, glassfontsize::Integer = 3, showprefixglasses::Bool = false)
+    draw_glass_map(glasscatalog::Module; λ::Length = 550nm, glassfontsize::Integer = 3, showprefixglasses::Bool = false)
 
 Draw a scatter plot of index vs dispersion (the derivative of index with respect to wavelength). Both index and
 dispersion are computed at wavelength λ.
@@ -90,7 +90,7 @@ to a reasonable value such as 3.0.
 
 example: plot only glasses that do not contain the strings "E_" and "J_"
 
-drawglassmap(NIKON,showprefixglasses = true,glassfilterpredicate = (x) -> !occursin("J_",string(x)) && !occursin("E_",string(x)))
+draw_glass_map(NIKON,showprefixglasses = true,glassfilterpredicate = (x) -> !occursin("J_",string(x)) && !occursin("E_",string(x)))
 """
 function draw_glass_map end
 export draw_glass_map
