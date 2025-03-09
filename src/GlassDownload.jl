@@ -5,11 +5,8 @@
 
 # paths for GlassCat source file builds
 const GLASSCAT_DIR = @__DIR__ # contains GlassCat.jl (pre-existing)
-const AGF_DIR = joinpath(GLASSCAT_DIR, "data", "agf") # contains SCHOTT.agf, SUMITA.agf, etc.
-const JL_DIR = joinpath(GLASSCAT_DIR, "data", "jl") # contains AGFGlasscat.jl, SCHOTT.jl, etc.
-
 const SOURCES_PATH = joinpath(GLASSCAT_DIR, "sources.txt")
-const AGFGLASSCAT_PATH = joinpath(JL_DIR, "AGFGlassCat.jl")
+
 
 """
     generate_jls(sourcenames::Vector{<:AbstractString}, mainfile::AbstractString, jldir::AbstractString, agfdir::AbstractString; test::Bool = false)
@@ -23,46 +20,23 @@ In order to avoid re-definition of constants `AGF_GLASS_NAMES` and `AGF_GLASSES`
 `test` argument. If `true`, we generate a .jl file that defines glasses with `GlassType.TEST` to avoid namespace/ID
 clashes.
 """
-function generate_jls(
-    sourcenames::Vector{<:AbstractString},
-    mainfile::AbstractString,
+function generate_jl(
+    source::AbstractString,
     jldir::AbstractString,
     agfdir::AbstractString;
-    test::Bool=false
 )
-    glasstype = test ? "TEST" : "AGF"
-    id = 1
-    catalogfiles = []
-    glassnames = []
 
     # generate several catalog files (.jl)
-    for catalogname in sourcenames
-        # parse the agffile (.agf) into a catalog (native Julia dictionary)
-        agffile = joinpath(agfdir, "$(catalogname).agf")
-        catalog = agffile_to_catalog(agffile)
+    # parse the agffile (.agf) into a catalog (native Julia dictionary)
+    agffile = joinpath(agfdir, "$(source).agf")
+    catalog = agffile_to_catalog(agffile)
 
-        # parse the catalog into a module string and write it to a catalog file (.jl)
-        id, modstring = catalog_to_modstring(id, catalogname, catalog, glasstype)
-        push!(catalogfiles, "$(catalogname).jl")
-        catalogpath = joinpath(jldir, catalogfiles[end])
-        @info "Writing $catalogpath"
-        open(catalogpath, "w") do io
-            write(io, modstring)
-        end
-    end
-
-    # generate the parent main file (.jl)
-    agfstrings = [
-        "export $(join(sourcenames, ", "))",
-        "",
-        ["include(\"$(catalogfile)\")" for catalogfile in catalogfiles]...,
-        "",
-        "const $(glasstype)_GLASSES = [$(join(glassnames, ", "))]",
-        ""
-    ]
-    @info "Writing $mainfile"
-    open(mainfile, "w") do io
-        write(io, join(agfstrings, "\n"))
+    # parse the catalog into a module string and write it to a catalog file (.jl)
+    modstring = catalog_to_modstring(source, catalog)
+    catalogpath = joinpath(jldir, source * ".jl")
+    @info "Writing $catalogpath"
+    open(catalogpath, "w") do io
+        write(io, modstring)
     end
 end
 
@@ -197,25 +171,23 @@ end
 Convert a `catalog` dict into a `modstring` which can be written to a Julia source file.
 """
 function catalog_to_modstring(
-    start_id::Integer, catalogname::AbstractString, catalog::Dict{<:AbstractString}, glasstype::AbstractString
+    catalogname::AbstractString, catalog::Dict{<:AbstractString}
 )
-    id = start_id
     isCI = haskey(ENV, "CI")
 
     modstrings = [
         "module $catalogname",
-        "using ..AGFFileReader: Glass, $glasstype",
+        "using ..AGFFileReader: Glass",
         "export $(join(keys(catalog), ", "))",
         ""
     ]
     for (glassname, glassinfo) in catalog
-        argstring = glassinfo_to_argstring(glassinfo, id, glasstype)
+        argstring = glassinfo_to_argstring(glassinfo)
         push!(modstrings, "const $glassname = Glass($argstring)")
-        id += 1
     end
     append!(modstrings, ["end # module", ""]) # last "" is for \n at EOF
 
-    return id, join(modstrings, "\n")
+    return join(modstrings, "\n")
 end
 
 """
@@ -223,10 +195,8 @@ Convert a `glassinfo` dict into a `docstring` to be prepended to a `Glass` const
 """
 function glassinfo_to_docstring(
     glassinfo::Dict{<:AbstractString},
-    id::Integer,
     catalogname::AbstractString,
     glassname::AbstractString,
-    glasstype::AbstractString
 )
     raw_name = glassinfo["raw_name"] == glassname ? "" : " ($(glassinfo["raw_name"]))"
     pad(str, padding=25) = rpad(str, padding)
@@ -235,7 +205,6 @@ function glassinfo_to_docstring(
     return join([
             "\"\"\"    $catalogname.$glassname$raw_name",
             "```",
-            "$(pad("ID:"))$glasstype:$id",
             "$(pad("RI @ 587nm:"))$(getinfo("Nd"))",
             "$(pad("Abbe Number:"))$(getinfo("Vd"))",
             "$(pad("ΔPgF:"))$(getinfo("ΔPgF"))",
@@ -251,7 +220,7 @@ end
 """
 Convert a `glassinfo` dict into an `argstring` to be passed into a `Glass` constructor.
 """
-function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString}, id::Integer, glasstype::AbstractString)
+function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString})
     argstrings = []
     for fn in string.(fieldnames(Glass))
         if fn in ["D₀", "D₁", "D₂", "E₀", "E₁", "λₜₖ"]
@@ -266,6 +235,13 @@ function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString}, id::Integer, 
                 str = join(["($(join(a, ", ")))" for a in v], ", ")
                 push!(argstrings, "[$str]")
             end
+        elseif fn == "relcost"
+            cost = get(glassinfo, fn, -1)
+            if isa(cost, String) #some glass files use "_" to mean there is no relcost value. SCHOTT does this.
+                push!(argstrings, repr(-1))
+            else
+                push!(argstrings, repr(cost))
+            end
         elseif fn == "transmissionN"
             continue
         else
@@ -276,21 +252,52 @@ function glassinfo_to_argstring(glassinfo::Dict{<:AbstractString}, id::Integer, 
 end
 
 
-macro download_AGF_files()
-    include(joinpath(GLASSCAT_DIR, "GlassTypes.jl"))
-    include(joinpath(GLASSCAT_DIR, "sources.jl"))
+function download_AGF_files()
+    global DATA_DIR = @get_scratch!(SCRATCH_NAME)
 
-    mkpath(AGF_DIR)
-    mkpath(JL_DIR)
+    agf_dir = mkpath(joinpath(DATA_DIR, "agf"))
+    jl_dir = mkpath(joinpath(DATA_DIR, "jl"))
 
     # Build/verify a source directory using information from sources.txt
     sources = split.(readlines(SOURCES_PATH))
-    verify_sources!(sources, AGF_DIR)
+
+    verify_sources!(sources, agf_dir)
     verified_source_names = first.(sources)
 
     # Use verified sources to generate required .jl files
     @info "Using sources: $(join(verified_source_names, ", ", " and "))"
-    generate_jls(verified_source_names, AGFGLASSCAT_PATH, JL_DIR, AGF_DIR)
-    include(joinpath(JL_DIR, "AGFGlassCat.jl"))
+    for source in verified_source_names
+        @info "Generating jl file for $source"
+        generate_jl(source, jl_dir, agf_dir)
+    end
+
+    # generate the parent main file (.jl)
+    agfstrings = [
+        "export $(join(verified_source_names, ", "))",
+        "",
+        ["include(raw\"$(joinpath(jl_dir,(source)* ".jl"))\")" for source in verified_source_names]...,
+        "",
+        "const AGF_GLASSES = [$(join(verified_source_names, ", "))]",
+        ""
+    ]
+    glass_cat = joinpath(jl_dir, "AGFGlassCat.jl")
+    @info "Writing $glass_cat)"
+    open(glass_cat, "w") do io
+        write(io, join(agfstrings, "\n"))
+    end
 end
-export @download_AGF_files
+export download_AGF_files
+
+#TODO
+function add_AGF_file()
+    global data_dir = @get_scratch!(SCRATCH_NAME)
+    throw(ErrorException("not implemented"))
+end
+
+function clear_AGF_files()
+    if ispath(DATA_DIR)
+        rm(joinpath(DATA_DIR, "agf"), recursive=true)
+        rm(joinpath(DATA_DIR, "jl"), recursive=true)
+    end
+end
+export clear_AGF_files

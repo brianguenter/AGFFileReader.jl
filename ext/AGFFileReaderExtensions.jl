@@ -6,7 +6,7 @@ using ForwardDiff: derivative
 using Unitful
 using Unitful: Temperature, Length
 
-#NOTE: for some reason drawglassmap doesn't work correctly, get error saying ForwardDiff is not defined. Not sure where this error is coming from.
+#NOTE: for some reason draw_glass_map doesn't work correctly, get error saying ForwardDiff is not defined. Not sure where this error is coming from.
 
 
 function plot_indices(glass::AbstractGlass; polyfit::Bool=false, fiterror::Bool=false, degree::Int=5, temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF, nsamples::Int=300, sampling_domain::String="wavelength")
@@ -58,7 +58,7 @@ end
 
 
 
-function drawglassmap(glasscatalog::Module; λ::Length=550nm, glassfontsize::Integer=3, showprefixglasses::Bool=false, minindex=1.0, maxindex=3.0, mindispersion=-0.3, maxdispersion=0.0, glassfilterpredicate=(x) -> true)
+function draw_glass_map(glasscatalog::Module; λ::Length=550nm, glassfontsize::Integer=3, showprefixglasses::Bool=false, minindex=1.0, maxindex=3.0, mindispersion=-0.3, maxdispersion=0.0, glassfilterpredicate=(x) -> true)
     wavelength = Float64(ustrip(uconvert(μm, λ)))
     indices = Vector{Float64}(undef, 0)
     dispersions = Vector{Float64}(undef, 0)

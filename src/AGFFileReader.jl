@@ -4,6 +4,7 @@
 
 module AGFFileReader
 
+using Scratch
 using Polynomials
 using Unitful
 using StaticArrays
@@ -13,8 +14,24 @@ using Unitful.DefaultSymbols
 
 using DelimitedFiles: readdlm # used in agffile_to_catalog
 
+#scratch data directory to store glass files
+DATA_DIR = ""
+SCRATCH_NAME = "GlassData"
 
+function __init__()
+    scratch_dir = @get_scratch!(SCRATCH_NAME)
 
+    glass_defs = joinpath(scratch_dir, "jl/AGFGlassCat.jl")
+
+    if !isfile(glass_defs)
+        download_AGF_files()
+    end
+    if isfile(glass_defs)
+        include(glass_defs)
+    else
+        @warn "No glass files found. This could be because you did not have internet access to access the glass files."
+    end
+end
 
 include("constants.jl")
 
@@ -24,13 +41,9 @@ include("BaseGlasses.jl")
 include("Air.jl")
 export Air, isair
 
-#need to fix this so it runs build process if agf data is not already downloaded
-# if !isfile(AGFGLASSCAT_PATH)
-#     @warn "$(basename(AGFGLASSCAT_PATH)) not found! Running build steps."
-#     Pkg.build("AGFFileReader"; verbose=true)
-# end
 include("GlassDownload.jl")
 
+#if the glass catalogs have been downloaded include them. Required because can't ship glass catalogs with the code and Registrator doesn't allow build process to modify source. When building on Julia Registrator server AGFGLASSCAT_PATH won't exist so this file won't be included.
 
 include("OTHER.jl")
 # include functionality for managing runtime (dynamic) glass cats: MIL_GLASSES and MODEL_GLASSES
@@ -39,10 +52,10 @@ export glassfromMIL, modelglass
 
 # include functions for searching the glass cats
 include("search.jl")
-export glasscatalogs, glassnames, findglass
+export glass_catalogs, glass_names, find_glass
 
 include("utilities.jl")
-export plot_indices, index, polyfit_indices, absairindex, absorption, drawglassmap
+export plot_indices, index, polyfit_indices, absairindex, absorption, draw_glass_map
 
 # include utility functions for maintaining the AGF source list
 include("sources.jl")
@@ -61,7 +74,7 @@ export plot_indices
 
 
 """
-    drawglassmap(glasscatalog::Module; λ::Length = 550nm, glassfontsize::Integer = 3, showprefixglasses::Bool = false)
+    draw_glass_map(glasscatalog::Module; λ::Length = 550nm, glassfontsize::Integer = 3, showprefixglasses::Bool = false)
 
 Draw a scatter plot of index vs dispersion (the derivative of index with respect to wavelength). Both index and
 dispersion are computed at wavelength λ.
@@ -77,10 +90,10 @@ to a reasonable value such as 3.0.
 
 example: plot only glasses that do not contain the strings "E_" and "J_"
 
-drawglassmap(NIKON,showprefixglasses = true,glassfilterpredicate = (x) -> !occursin("J_",string(x)) && !occursin("E_",string(x)))
+draw_glass_map(NIKON,showprefixglasses = true,glassfilterpredicate = (x) -> !occursin("J_",string(x)) && !occursin("E_",string(x)))
 """
-function drawglassmap end
-export drawglassmap
+function draw_glass_map end
+export draw_glass_map
 
 end # module
 
