@@ -242,24 +242,4 @@ function absairindex(λ::T; temperature::T=T(TEMP_REF), pressure::T=T(PRESSURE_R
     return n_rel
 end
 
-"""
-    polyfit_indices(wavelengths, n_rel; degree=5)
-
-Fit a polynomial to `indices` at `wavelengths`, optionally specifying the `degree` of the polynomial.
-Returns tuple of array of fitted indices at wavelengths and the polynomial.
-"""
-function polyfit_indices(wavelengths::Union{AbstractRange{<:Length},AbstractArray{<:Length,1}}, indices::AbstractArray{<:Number,1}; degree::Int=5)
-    w = ustrip.(uconvert.(u"μm", wavelengths))
-    okay = (indices .> 0.0)
-    if !any(okay)
-        return (ones(Float64, size(w)) .* NaN, nothing)
-    end
-    xs = range(-1.0, stop=1.0, length=length(w[okay]))
-    poly = fit(xs, indices[okay], degree)
-    interp_indices = poly.(xs)
-    # ensure output has all entries
-    out = ones(Float64, size(w)) .* NaN
-    out[okay] = interp_indices
-    return (out, poly)
-end
 

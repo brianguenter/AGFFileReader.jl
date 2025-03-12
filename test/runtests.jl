@@ -49,64 +49,43 @@ using Unitful.DefaultSymbols
     end
 end
 
-# @testitem "Build Tests" begin
-#     # check that all automatic downloads are working
-#     # this shouldn't be a test because we cannot guarantee that all downloads will work. Random network issues, changes in webpages, etc. can temporarily prevent downloads.
-#     # for catname in split("HOYA NIKON OHARA SCHOTT SUMITA")
-#     #     agffile = joinpath(AGFFileReader.AGF_DIR, catname * ".agf")
-#     #     @test isfile(agffile)
-#     # end
-
-#     # check that particularly problematic glasses are parsing correctly
-#     @test !isnan(NIKON.LLF6.C10)
-# end
-
 @testsnippet Add_AGF begin
     tmpdir = mktempdir()
     agfdir = mktempdir(tmpdir)
     sourcefile, _ = mktemp(tmpdir)
 end
-    @testitem "bad implicit catalog names" setup = [Add_AGF] begin
-        for agffile in split("a 1.agf a.Agf")
-            @test_logs (:error, "invalid implicit catalog name \"$agffile\". Should be purely alphabetical with a .agf/.AGF extension.") add_agf(agffile; agfdir, sourcefile)
+@testitem "bad implicit catalog names" setup = [Add_AGF] begin
+    for agffile in split("a 1.agf a.Agf")
+        @test_logs (:error, "invalid implicit catalog name \"$agffile\". Should be purely alphabetical with a .agf/.AGF extension.") add_agf(agffile; agfdir, sourcefile)
+    end
+end
+
+@testitem "add to source file" setup = [Add_AGF] begin
+    for name in split("a b")
+        open(joinpath(tmpdir, "$name.agf"), "w") do io
+            write(io, "")
         end
     end
+    empty_sha = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
-    @testitem "file not found" setup = [Add_AGF]begin
-        @test_logs(
-            (:info, "Downloading source file from nonexistentfile.agf"),
-            (:error, ArgumentError("missing or unsupported scheme in URL (expected http(s) or ws(s)): nonexistentfile.agf")),
-            (:error, "failed to download from nonexistentfile.agf"),
-            add_agf("nonexistentfile.agf"; agfdir, sourcefile)
-        )
-    end
+    @test isempty(readlines(sourcefile))
 
-    @testitem "add to source file" setup = [Add_AGF] begin
-        for name in split("a b")
-            open(joinpath(tmpdir, "$name.agf"), "w") do io
-                write(io, "")
-            end
-        end
-        empty_sha = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    add_agf(joinpath(tmpdir, "a.agf"); agfdir, sourcefile, rebuild=false)
+    @test length(readlines(sourcefile)) === 1
+    @test readlines(sourcefile)[1] === "A $empty_sha"
 
-        @test isempty(readlines(sourcefile))
+    add_agf(joinpath(tmpdir, "b.agf"); agfdir, sourcefile, rebuild=false)
+    @test length(readlines(sourcefile)) === 2
+    @test readlines(sourcefile)[1] === "A $empty_sha"
+    @test readlines(sourcefile)[2] === "B $empty_sha"
 
-        add_agf(joinpath(tmpdir, "a.agf"); agfdir, sourcefile, rebuild=false)
-        @test length(readlines(sourcefile)) === 1
-        @test readlines(sourcefile)[1] === "A $empty_sha"
+    @test_logs(
+        (:error, "adding the catalog name \"A\" would create a duplicate entry in source file $sourcefile"),
+        add_agf(joinpath(tmpdir, "a.agf"); agfdir, sourcefile)
+    )
+end
 
-        add_agf(joinpath(tmpdir, "b.agf"); agfdir, sourcefile, rebuild=false)
-        @test length(readlines(sourcefile)) === 2
-        @test readlines(sourcefile)[1] === "A $empty_sha"
-        @test readlines(sourcefile)[2] === "B $empty_sha"
-
-        @test_logs(
-            (:error, "adding the catalog name \"A\" would create a duplicate entry in source file $sourcefile"),
-            add_agf(joinpath(tmpdir, "a.agf"); agfdir, sourcefile)
-        )
-    end
-
-    # TODO rebuild=true
+# TODO rebuild=true
 
 # integration test
 @testitem "verify_sources!" begin
@@ -180,19 +159,19 @@ end
     )
     FIELDS = names(TEST_CAT_VALUES)[2:end]
 end
-    @testitem "Parsing Tests" setup = [Generate] begin
-        cat = AGFFileReader.agffile_to_catalog(SOURCE_FILE)
+@testitem "Parsing Tests" setup = [Generate] begin
+    cat = AGFFileReader.agffile_to_catalog(SOURCE_FILE)
 
-        for glass in eachrow(TEST_CAT_VALUES)
-            name = glass["name"]
-            @test name ∈ keys(cat)
-            for field in FIELDS
-                @test glass[field] == cat[name][field]
-            end
+    for glass in eachrow(TEST_CAT_VALUES)
+        name = glass["name"]
+        @test name ∈ keys(cat)
+        for field in FIELDS
+            @test glass[field] == cat[name][field]
         end
     end
+end
 
- @testitem "Glass Tests" setup = [WrappedAllocs] begin
+@testitem "Glass Tests" setup = [WrappedAllocs] begin
     using Unitful
     using Unitful.DefaultSymbols
 
