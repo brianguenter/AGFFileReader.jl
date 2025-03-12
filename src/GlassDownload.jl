@@ -289,7 +289,6 @@ export download_AGF_files
 
 #TODO
 function add_AGF_file()
-    global scratch_dir = @get_scratch!(SCRATCH_NAME)
     throw(ErrorException("not implemented"))
 end
 

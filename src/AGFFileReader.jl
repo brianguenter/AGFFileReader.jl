@@ -14,9 +14,8 @@ using Unitful.DefaultSymbols
 using DelimitedFiles: readdlm # used in agffile_to_catalog
 
 #scratch data directory to store glass files
-SCRATCH_NAME = "GlassData"
 
-scratch_directory() = @get_scratch!(SCRATCH_NAME)
+scratch_directory() = @get_scratch!("GlassData")
 
 function __init__()
 
