@@ -34,7 +34,6 @@ function generate_jl(
     # parse the catalog into a module string and write it to a catalog file (.jl)
     modstring = catalog_to_modstring(source, catalog)
     catalogpath = joinpath(jldir, source * ".jl")
-    @info "Writing $catalogpath"
     open(catalogpath, "w") do io
         write(io, modstring)
     end
@@ -265,9 +264,11 @@ function download_AGF_files()
     verified_source_names = first.(sources)
 
     # Use verified sources to generate required .jl files
-    @info "Using sources: $(join(verified_source_names, ", ", " and "))"
+    @info "**********************************"
+    @info "**********************************"
+    @info "Downloaded these glass catalogs: $(join(verified_source_names, ", ", " and "))"
+    @info "Generating .jl files for glass catalogs"
     for source in verified_source_names
-        @info "Generating jl file for $source"
         generate_jl(source, jl_dir, agf_dir)
     end
 
@@ -281,7 +282,7 @@ function download_AGF_files()
         ""
     ]
     glass_cat = joinpath(jl_dir, "AGFGlassCat.jl")
-    @info "Writing $glass_cat)"
+    @info "Writing glass catalog files"
     open(glass_cat, "w") do io
         write(io, join(agfstrings, "\n"))
     end

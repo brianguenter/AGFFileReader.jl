@@ -109,6 +109,7 @@ function verify_sources!(sources::AbstractVector{<:AbstractVector{<:AbstractStri
         if !verified
             push!(missing_sources, i)
         end
+        println("\n")
     end
 
     deleteat!(sources, missing_sources)
@@ -120,15 +121,16 @@ end
 Verify a source file using SHA256, returning true if successful. Otherwise, remove the file and return false.
 """
 function verify_source(agffile::AbstractString, expected_sha256sum::AbstractString)
+    catalog_name = basename(agffile)
     if !isfile(agffile)
-        @info "[-] Missing file at $agffile"
+        @info "[-] Missing glass catalog file for $catalog_name"
     else
         sha256sum = SHA.bytes2hex(SHA.sha256(read(agffile)))
         if expected_sha256sum == sha256sum
-            @info "[✓] Verified file at $agffile"
+            @info "[✓] Verified glass catalog file for $catalog_name"
             return true
         else
-            @info "[x] Removing unverified file at $agffile (expected $expected_sha256sum, got $sha256sum)"
+            @info "[x] Invalid SHA256 checksum: removing corrupted glass catalog file $catalog_name"
             rm(agffile)
         end
     end
@@ -155,6 +157,6 @@ function download_source(dest::AbstractString, url::AbstractString, POST_data::U
         end
         write(dest, agfdata)
     catch e
-        @error e
+        @info "HTTP error so file wasn't downloaded"
     end
 end
