@@ -18,7 +18,7 @@ using DelimitedFiles: readdlm # used in agffile_to_catalog
 DATA_DIR = ""
 SCRATCH_NAME = "GlassData"
 
-function __init__()
+function initialize_glass_catalogs()
     scratch_dir = @get_scratch!(SCRATCH_NAME)
 
     glass_defs = joinpath(scratch_dir, "jl/AGFGlassCat.jl")
