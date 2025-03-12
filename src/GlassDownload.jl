@@ -252,10 +252,10 @@ end
 
 
 function download_AGF_files()
-    global DATA_DIR = @get_scratch!(SCRATCH_NAME)
+    scratch_dir = scratch_directory()
 
-    agf_dir = mkpath(joinpath(DATA_DIR, "agf"))
-    jl_dir = mkpath(joinpath(DATA_DIR, "jl"))
+    agf_dir = mkpath(joinpath(scratch_dir, "agf"))
+    jl_dir = mkpath(joinpath(scratch_dir, "jl"))
 
     # Build/verify a source directory using information from sources.txt
     sources = split.(readlines(SOURCES_PATH))
@@ -289,14 +289,15 @@ export download_AGF_files
 
 #TODO
 function add_AGF_file()
-    global data_dir = @get_scratch!(SCRATCH_NAME)
+    global scratch_dir = @get_scratch!(SCRATCH_NAME)
     throw(ErrorException("not implemented"))
 end
 
 function clear_AGF_files()
-    if ispath(DATA_DIR)
-        rm(joinpath(DATA_DIR, "agf"), recursive=true)
-        rm(joinpath(DATA_DIR, "jl"), recursive=true)
+    scratch_dir = scratch_directory()
+    if ispath(scratch_dir)
+        rm(joinpath(scratch_dir, "agf"), recursive=true)
+        rm(joinpath(scratch_dir, "jl"), recursive=true)
     end
 end
 export clear_AGF_files

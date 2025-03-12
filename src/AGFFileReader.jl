@@ -5,7 +5,6 @@
 module AGFFileReader
 
 using Scratch
-using Polynomials
 using Unitful
 using StaticArrays
 using Base: @.
@@ -15,13 +14,13 @@ using Unitful.DefaultSymbols
 using DelimitedFiles: readdlm # used in agffile_to_catalog
 
 #scratch data directory to store glass files
-DATA_DIR = ""
 SCRATCH_NAME = "GlassData"
 
-function initialize_glass_catalogs()
-    scratch_dir = @get_scratch!(SCRATCH_NAME)
+scratch_directory() = @get_scratch!(SCRATCH_NAME)
 
-    glass_defs = joinpath(scratch_dir, "jl/AGFGlassCat.jl")
+function __init__()
+
+    glass_defs = joinpath(scratch_directory(), "jl/AGFGlassCat.jl")
 
     if !isfile(glass_defs)
         download_AGF_files()
@@ -32,7 +31,6 @@ function initialize_glass_catalogs()
         @warn "No glass files found. This could be because you did not have internet access to access the glass files."
     end
 end
-export initialize_glass_catalogs
 
 include("constants.jl")
 
