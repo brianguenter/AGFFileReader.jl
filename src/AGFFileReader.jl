@@ -32,6 +32,7 @@ function initialize_glass_catalogs()
         @warn "No glass files found. This could be because you did not have internet access to access the glass files."
     end
 end
+export initialize_glass_catalogs
 
 include("constants.jl")
 
