@@ -264,9 +264,7 @@ function download_AGF_files()
     verified_source_names = first.(sources)
 
     # Use verified sources to generate required .jl files
-    @info "**********************************"
-    @info "**********************************"
-    @info "Downloaded these glass catalogs: $(join(verified_source_names, ", ", " and "))"
+    @info "Downloaded these glass catalogs: $(join(verified_source_names, ", ", " and ")) \n \n"
     @info "Generating .jl files for glass catalogs"
     for source in verified_source_names
         generate_jl(source, jl_dir, agf_dir)
