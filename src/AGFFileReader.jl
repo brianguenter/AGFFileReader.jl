@@ -19,7 +19,7 @@ using DelimitedFiles: readdlm # used in agffile_to_catalog
 scratch_directory() = @get_scratch!("GlassData")
 agf_directory() = joinpath(scratch_directory(), "agf")
 jl_directory() = joinpath(scratch_directory(), "jl")
-"""Download AGF glass files from list in `src\sources.txt` and generate Julia source file with one modula per glass catalog and one `const Glass` definition per glass in that catalog. You should call this function before you use `AGFFileReader` otherwise your glass catalog will be empty"""
+"""Download AGF glass files from list in `src/sources.txt` and generate Julia source file with one modula per glass catalog and one `const Glass` definition per glass in that catalog. You should call this function before you use `AGFFileReader` otherwise your glass catalog will be empty"""
 function initialize_AGFFileReader()
     #not as efficient as it could be since it reads the AGF glass data then writes Julia source files and includes them. Legacy code that was complicated to turn into Expr type statements instead of text files.
     glass_defs = joinpath(scratch_directory(), "jl/AGFGlassCat.jl")
