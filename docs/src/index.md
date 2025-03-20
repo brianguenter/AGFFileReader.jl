@@ -5,12 +5,7 @@ CurrentModule = AGFFileReader
 # AGFFileReader
 AGFFileReader is a library for reading AGF files. The contents of an AGF file can vary but usually each file contains material property information for several optical materials made by a single manufacturer. By convention the name of the AGF file is assumed to be the manufacturer name. For example SCHOTT.AGF contains material data for glasses made by the Schott company. AGF files are available from many publicly accessible websites. 
 
-AGFFileReader automates the process of downloading and installing an extensive library of AGF files from many sources. When the AGFFileReader package is first installed the build process will attempt to download AGF glass files from the sources in the file `sources.txt`. 
-
-AGFFileReader transforms the information in the AGF files into Julia files which are created automatically during the build process. Each AGF file gets its own module, whose name will match that of the AGF file. Each material is assigned a corresponding Julia type. 
-
- 
- ## Using installed glasses
+AGFFileReader automates the process of downloading and installing an extensive library of AGF files from many sources. After you install the package you must call `initialize_AGFFileReader()`. If no glass files have been downloaded this will download files from the list in `src/sources.txt`. If glass files have been downloaded this will include them in the AGFFileReader module. Each AGF file gets its own module, whose name will match that of the AGF file. Each material in that AFG file is assigned a corresponding `Glass` type. 
 
 Glass types are accessed like so: `AGFFileReader.CATALOG_NAME.GLASS_NAME`, e.g.
 

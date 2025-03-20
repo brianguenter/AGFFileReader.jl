@@ -256,8 +256,6 @@ end
 
 
 function download_AGF_files()
-    scratch_dir = scratch_directory()
-
     agf_dir = mkpath(agf_directory())
     jl_dir = mkpath(jl_directory())
 
