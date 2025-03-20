@@ -132,11 +132,15 @@ function agffile_to_catalog(agffile::AbstractString)
     # use DelimitedFiles.readdlm to parse the source file conveniently (with type inference)
     for line in eachrow(readdlm(agffile))
         for item in line
-            if !is_utf8
-                item = decode(Vector{UInt8}(item), "UTF-16")
-                _item = tryparse(Float64, item)
-                item = _item === nothing ? item : _item
-            end
+            #removed this special case because it has never executed and this only uses one function, decode, from StringEncodings, which is otherwise an unnecessary dependency.
+            # From Wikipedia: UTF-16 is the only encoding (still) allowed on the web that is incompatible with 8-bit ASCII.[7][b] However it has never gained popularity on the web, where it is declared by under 0.004% of public web pages (and even then, the web pages are most likely also using UTF-8).[9] UTF-8, by comparison, gained dominance years ago and accounted for 99% of all web pages by 2025.[10] The Web Hypertext Application Technology Working Group (WHATWG) considers UTF-8 "the mandatory encoding for all [text]" and that for security reasons browser applications should not use UTF-16.[11]
+
+            #if this ever becomes a problem uncomment this code and add StringEncodings as a dependency.
+            # if !is_utf8
+            #     item = decode(Vector{UInt8}(item), "UTF-16")
+            #     _item = tryparse(Float64, item)
+            #     item = _item === nothing ? item : _item
+            # end
 
             if item == "" # eol
                 break
@@ -254,8 +258,8 @@ end
 function download_AGF_files()
     scratch_dir = scratch_directory()
 
-    agf_dir = mkpath(joinpath(scratch_dir, "agf"))
-    jl_dir = mkpath(joinpath(scratch_dir, "jl"))
+    agf_dir = mkpath(agf_directory())
+    jl_dir = mkpath(jl_directory())
 
     # Build/verify a source directory using information from sources.txt
     sources = split.(readlines(SOURCES_PATH))

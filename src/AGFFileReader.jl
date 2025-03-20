@@ -10,12 +10,15 @@ using StaticArrays
 using Base: @.
 import Unitful: Length, Temperature, Quantity, Units
 using Unitful.DefaultSymbols
+using DelimitedFiles
 
 using DelimitedFiles: readdlm # used in agffile_to_catalog
 
 #scratch data directory to store glass files
 
 scratch_directory() = @get_scratch!("GlassData")
+agf_directory() = joinpath(scratch_dir(), "agf")
+jl_directory() = joinpath(scratch_dir(), "jl")
 
 function __init__()
 
@@ -53,7 +56,7 @@ include("search.jl")
 export glass_catalogs, glass_names, find_glass
 
 include("utilities.jl")
-export plot_indices, index, polyfit_indices, absairindex, absorption, draw_glass_map
+export plot_indices, index, absairindex, absorption, draw_glass_map
 
 # include utility functions for maintaining the AGF source list
 include("sources.jl")
