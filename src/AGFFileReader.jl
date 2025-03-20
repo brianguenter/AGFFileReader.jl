@@ -20,7 +20,7 @@ scratch_directory() = @get_scratch!("GlassData")
 agf_directory() = joinpath(scratch_dir(), "agf")
 jl_directory() = joinpath(scratch_dir(), "jl")
 
-function __init__()
+function initialize_AGFFileReader()
 
     glass_defs = joinpath(scratch_directory(), "jl/AGFGlassCat.jl")
 
