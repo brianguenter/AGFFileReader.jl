@@ -9,7 +9,7 @@ using Unitful: Temperature, Length
 #NOTE: for some reason draw_glass_map doesn't work correctly, get error saying ForwardDiff is not defined. Not sure where this error is coming from.
 
 
-function plot_indices(glass::AbstractGlass; polyfit::Bool=false, fiterror::Bool=false, degree::Int=5, temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF, nsamples::Int=300, sampling_domain::String="wavelength")
+function plot_indices(glass::AbstractGlass; fiterror::Bool=false, degree::Int=5, temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF, nsamples::Int=300, sampling_domain::String="wavelength")
     if isair(glass)
         wavemin = 380 * u"nm"
         wavemax = 740 * u"nm"
@@ -40,18 +40,6 @@ function plot_indices(glass::AbstractGlass; polyfit::Bool=false, fiterror::Bool=
     end
     indices = [f(w) for w in waves]
     plot!(ustrip.(waves), indices, color=:blue, label="From Data")
-
-    if polyfit
-        (p_indices, _) = polyfit_indices(waves, indices, degree=degree)
-        plot!(ustrip.(waves), p_indices, color=:black, markersize=4, label="Polyfit")
-    end
-
-    if polyfit && fiterror
-        err = p_indices - indices
-        p2 = plot(xlabel="wavelength (um)", ylabel="fit error")
-        plot!(ustrip.(waves), err, color=:red, label="Fit Error")
-        p = plot(p, p2, layout=2)
-    end
 
     plot!(title="$(glassname(glass)) dispersion")
 end

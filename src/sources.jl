@@ -28,10 +28,9 @@ If `rebuild` is true, Pkg.build is called at the end to install the new catalog.
 """
 function add_agf(
     agffile::AbstractString;
-    agfdir::AbstractString=AGF_DIR,
+    agfdir::AbstractString=agf_directory(),
     sourcefile::AbstractString=SOURCES_PATH,
     name::Union{Nothing,AbstractString}=nothing,
-    rebuild::Bool=true
 )
     # check name
     if name === nothing
@@ -72,12 +71,6 @@ function add_agf(
     open(sourcefile, "a") do io
         source = isfile(agffile) ? [name, sha256sum] : [name, sha256sum, agffile]
         write(io, join(source, ' ') * '\n')
-    end
-
-    # optional rebuild
-    if rebuild
-        @info "Re-building OpticSim.jl"
-        Pkg.build("OpticSim"; verbose=true)
     end
 end
 

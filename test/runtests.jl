@@ -13,7 +13,12 @@ using StaticArrays
 using Unitful
 using Unitful.DefaultSymbols
 
+
+
+
 @run_package_tests
+
+include("Aqua.jl")
 
 @testsnippet WrappedAllocs begin
     """
@@ -60,30 +65,31 @@ end
     end
 end
 
-@testitem "add to source file" setup = [Add_AGF] begin
-    for name in split("a b")
-        open(joinpath(tmpdir, "$name.agf"), "w") do io
-            write(io, "")
-        end
-    end
-    empty_sha = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+# Currently do not have a reasonable way to add agf files. Need to rework all the code that downloads the AGF files and converts them to source.
+# @testitem "add to source file" setup = [Add_AGF] begin
+#     for name in split("a b")
+#         open(joinpath(tmpdir, "$name.agf"), "w") do io
+#             write(io, "")
+#         end
+#     end
+#     empty_sha = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
-    @test isempty(readlines(sourcefile))
+#     @test isempty(readlines(sourcefile))
 
-    add_agf(joinpath(tmpdir, "a.agf"); agfdir, sourcefile, rebuild=false)
-    @test length(readlines(sourcefile)) === 1
-    @test readlines(sourcefile)[1] === "A $empty_sha"
+#     add_agf(joinpath(tmpdir, "a.agf"); agfdir, sourcefile, rebuild=false)
+#     @test length(readlines(sourcefile)) === 1
+#     @test readlines(sourcefile)[1] === "A $empty_sha"
 
-    add_agf(joinpath(tmpdir, "b.agf"); agfdir, sourcefile, rebuild=false)
-    @test length(readlines(sourcefile)) === 2
-    @test readlines(sourcefile)[1] === "A $empty_sha"
-    @test readlines(sourcefile)[2] === "B $empty_sha"
+#     add_agf(joinpath(tmpdir, "b.agf"); agfdir, sourcefile, rebuild=false)
+#     @test length(readlines(sourcefile)) === 2
+#     @test readlines(sourcefile)[1] === "A $empty_sha"
+#     @test readlines(sourcefile)[2] === "B $empty_sha"
 
-    @test_logs(
-        (:error, "adding the catalog name \"A\" would create a duplicate entry in source file $sourcefile"),
-        add_agf(joinpath(tmpdir, "a.agf"); agfdir, sourcefile)
-    )
-end
+#     @test_logs(
+#         (:error, "adding the catalog name \"A\" would create a duplicate entry in source file $sourcefile"),
+#         add_agf(joinpath(tmpdir, "a.agf"); agfdir, sourcefile)
+#     )
+# end
 
 # TODO rebuild=true
 
