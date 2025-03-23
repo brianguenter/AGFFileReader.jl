@@ -1,7 +1,7 @@
 name = "AGFFileReader"
 uuid = "36dd7d7d-c279-4b5c-a024-2ba417cea492"
 authors = ["brianguenter"]
-version = "1.1.0"
+version = "1.1.1"
 
 [deps]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
@@ -24,7 +24,7 @@ AGFFileReaderExtensions = ["Plots", "GR", "ForwardDiff", "Unitful"]
 Aqua = "0.8"
 DataFrames = "1"
 DelimitedFiles = "1"
-ForwardDiff = "0.1"
+ForwardDiff = "0.10"
 GR = "0.7"
 HTTP = "1"
 JET = "0.9"
