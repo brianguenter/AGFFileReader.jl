@@ -1,6 +1,6 @@
 module AGFFileReaderExtensions
 using AGFFileReader
-using GR
+# using GR
 using Plots
 using ForwardDiff: derivative
 using Unitful
