@@ -2,14 +2,12 @@ module AGFFileReaderExtensions
 using AGFFileReader
 # using GR
 using Plots
-using ForwardDiff: derivative
+import ForwardDiff
 using Unitful
 using Unitful: Temperature, Length
 
-#NOTE: for some reason draw_glass_map doesn't work correctly, get error saying ForwardDiff is not defined. Not sure where this error is coming from.
 
-
-function plot_indices(glass::AbstractGlass; fiterror::Bool=false, degree::Int=5, temperature::Temperature=TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF, nsamples::Int=300, sampling_domain::String="wavelength")
+function plot_indices(glass::AbstractGlass; fiterror::Bool=false, degree::Int=5, temperature::Temperature=AGFFileReader.TEMP_REF_UNITFUL, pressure::Float64=PRESSURE_REF, nsamples::Int=300, sampling_domain::String="wavelength")
     if isair(glass)
         wavemin = 380 * u"nm"
         wavemax = 740 * u"nm"
@@ -46,8 +44,8 @@ end
 
 
 
-function draw_glass_map(glasscatalog::Module; λ::Length=550nm, glassfontsize::Integer=3, showprefixglasses::Bool=false, minindex=1.0, maxindex=3.0, mindispersion=-0.3, maxdispersion=0.0, glassfilterpredicate=(x) -> true)
-    wavelength = Float64(ustrip(uconvert(μm, λ)))
+function draw_glass_map(glasscatalog::Module; λ::Length=550u"nm", glassfontsize::Integer=3, showprefixglasses::Bool=false, minindex=1.0, maxindex=3.0, mindispersion=-0.3, maxdispersion=0.0, glassfilterpredicate=(x) -> true)
+    wavelength = Float64(ustrip(uconvert(u"μm", λ)))
     indices = Vector{Float64}(undef, 0)
     dispersions = Vector{Float64}(undef, 0)
     glassnames = Vector{String}(undef, 0)
@@ -57,7 +55,7 @@ function draw_glass_map(glasscatalog::Module; λ::Length=550nm, glassfontsize::I
         glassstring = String(name)
         hasprefix = occursin("_", glassstring)
 
-        if typeof(glass) !== Module && (minindex <= index(glass, wavelength) <= maxindex)
+        if glass isa AbstractGlass &&(minindex <= index(glass, wavelength) <= maxindex)
             f(x) = index(glass, x)
             g = x -> ForwardDiff.derivative(f, x)
             dispersion = g(wavelength)
